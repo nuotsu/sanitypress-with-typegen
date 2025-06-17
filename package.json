@@ -1,6 +1,6 @@
 {
 	"name": "typed-sanitypress",
-	"version": "0.1.0",
+	"version": "0.0.1",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
@@ -12,17 +12,17 @@
 	},
 	"dependencies": {
 		"@sanity/image-url": "^1.1.0",
-		"@sanity/vision": "^3.91.0",
+		"@sanity/vision": "^3.93.0",
 		"next": "15.3.3",
 		"next-sanity": "^9.12.0",
-		"react": "^19.0.0",
-		"react-dom": "^19.0.0",
-		"sanity": "^3.91.0",
-		"styled-components": "^6.1.18"
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"sanity": "^3.93.0",
+		"styled-components": "^6.1.19"
 	},
 	"devDependencies": {
 		"@tailwindcss/postcss": "^4",
-		"@types/node": "^20",
+		"@types/node": "^24",
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"prettier": "^3.5.3",
