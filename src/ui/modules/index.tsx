@@ -1,10 +1,12 @@
 import AccordionList from './accordion-list'
+import CustomHTML from './custom-html'
 
 import { createDataAttribute } from 'next-sanity'
 import type { PAGE_QUERYResult } from '@/sanity/types'
 
 const MODULES_MAP = {
 	'accordion-list': AccordionList,
+	'custom-html': CustomHTML,
 } as const
 
 export default function ModulesResolver({ page }: { page: PAGE_QUERYResult }) {
@@ -23,6 +25,7 @@ export default function ModulesResolver({ page }: { page: PAGE_QUERYResult }) {
 							type: page._type,
 							path: `page[_key == "${module._key}"]`,
 						})}
+						// @ts-expect-error
 						key={module._key}
 					/>
 				)

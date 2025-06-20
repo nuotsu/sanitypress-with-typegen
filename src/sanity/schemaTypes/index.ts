@@ -10,6 +10,7 @@ import metadata from './objects/metadata'
 
 // modules
 import accordionList from './modules/accordion-list'
+import customHtml from './modules/custom-html'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
 	types: [
@@ -23,5 +24,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
 
 		// modules
 		accordionList,
+		customHtml,
 	],
 }

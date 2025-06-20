@@ -5,7 +5,6 @@ import {
 	VscSearch,
 	VscEdit,
 	VscEyeClosed,
-	VscFile,
 } from 'react-icons/vsc'
 
 export default defineType({
@@ -24,7 +23,7 @@ export default defineType({
 			name: 'modules',
 			type: 'array',
 			group: 'content',
-			of: [{ type: 'accordion-list' }],
+			of: [{ type: 'accordion-list' }, { type: 'custom-html' }],
 		}),
 		defineField({
 			name: 'metadata',

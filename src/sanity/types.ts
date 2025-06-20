@@ -13,6 +13,13 @@
  */
 
 // Source: schema.json
+export type CustomHtml = {
+	_type: 'custom-html'
+	className?: string
+	html?: Code
+	css?: Code
+}
+
 export type AccordionList = {
 	_type: 'accordion-list'
 	intro?: Array<{
@@ -53,9 +60,12 @@ export type AccordionList = {
 			_type: 'block'
 			_key: string
 		}>
+		open?: boolean
 		_type: 'accordion'
 		_key: string
 	}>
+	connect?: boolean
+	enableSchema?: boolean
 }
 
 export type Redirect = {
@@ -90,9 +100,12 @@ export type Page = {
 	_rev: string
 	title?: string
 	modules?: Array<
-		{
-			_key: string
-		} & AccordionList
+		| ({
+				_key: string
+		  } & AccordionList)
+		| ({
+				_key: string
+		  } & CustomHtml)
 	>
 	metadata?: Metadata
 }
@@ -103,6 +116,14 @@ export type Metadata = {
 	description?: string
 	slug?: Slug
 	noIndex?: boolean
+}
+
+export type Code = {
+	_type: 'code'
+	language?: string
+	filename?: string
+	code?: string
+	highlightedLines?: Array<number>
 }
 
 export type SanityImagePaletteSwatch = {
@@ -224,11 +245,13 @@ export type SanityAssetSourceData = {
 }
 
 export type AllSanitySchemaTypes =
+	| CustomHtml
 	| AccordionList
 	| Redirect
 	| Link
 	| Page
 	| Metadata
+	| Code
 	| SanityImagePaletteSwatch
 	| SanityImagePalette
 	| SanityImageDimensions
@@ -252,9 +275,12 @@ export type PAGE_QUERYResult = {
 	_rev: string
 	title?: string
 	modules?: Array<
-		{
-			_key: string
-		} & AccordionList
+		| ({
+				_key: string
+		  } & AccordionList)
+		| ({
+				_key: string
+		  } & CustomHtml)
 	>
 	metadata?: Metadata
 } | null

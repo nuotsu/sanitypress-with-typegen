@@ -18,6 +18,7 @@ import {
 	projectUsersWidget,
 } from '@sanity/dashboard'
 import { vercelWidget } from 'sanity-plugin-dashboard-widget-vercel'
+import { codeInput } from '@sanity/code-input'
 
 export default defineConfig({
 	title: 'SanityPress with Typegen',
@@ -37,5 +38,6 @@ export default defineConfig({
 		// Vision is for querying with GROQ from inside the Studio
 		// https://www.sanity.io/docs/the-vision-plugin
 		visionTool({ defaultApiVersion: apiVersion }),
+		codeInput(),
 	],
 })

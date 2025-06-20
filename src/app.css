@@ -7,10 +7,18 @@
 	--color-foreground: var(--foreground);
 }
 
-:root {
-	--background: #fff;
-	--foreground: #000;
+@layer base {
+	:root {
+		--background: #fff;
+		--foreground: #000;
+	}
+
+	summary {
+		cursor: pointer;
+	}
 }
+
+/* components */
 
 @utility section {
 	@apply mx-auto max-w-7xl;
@@ -18,4 +26,12 @@
 
 @utility prose {
 	@apply space-y-4 leading-relaxed;
+
+	& a {
+		@apply link;
+	}
+}
+
+@utility link {
+	@apply underline hover:decoration-2;
 }

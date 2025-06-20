@@ -10,6 +10,7 @@ const fontSans = Geist({
 export const metadata: Metadata = {
 	title: 'SanityPress with Typegen',
 	description: 'SanityPress with Typegen',
+	icons: 'https://fav.farm/♣️',
 }
 
 export default function RootLayout({
