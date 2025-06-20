@@ -58,6 +58,30 @@ export type AccordionList = {
 	}>
 }
 
+export type Redirect = {
+	_id: string
+	_type: 'redirect'
+	_createdAt: string
+	_updatedAt: string
+	_rev: string
+	source?: string
+	destination?: Link
+}
+
+export type Link = {
+	_type: 'link'
+	label?: string
+	type?: 'internal' | 'external'
+	internal?: {
+		_ref: string
+		_type: 'reference'
+		_weak?: boolean
+		[internalGroqTypeReferenceTo]?: 'page'
+	}
+	external?: string
+	params?: string
+}
+
 export type Page = {
 	_id: string
 	_type: 'page'
@@ -201,6 +225,8 @@ export type SanityAssetSourceData = {
 
 export type AllSanitySchemaTypes =
 	| AccordionList
+	| Redirect
+	| Link
 	| Page
 	| Metadata
 	| SanityImagePaletteSwatch
