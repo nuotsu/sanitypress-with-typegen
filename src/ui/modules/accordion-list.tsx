@@ -9,7 +9,13 @@ export default function ({
 	enableSchema,
 }: AccordionList & { _key: string }) {
 	return (
-		<section className="section">
+		<section
+			className="section"
+			{...(enableSchema && {
+				itemScope: true,
+				itemType: 'https://schema.org/FAQPage',
+			})}
+		>
 			{intro && (
 				<header className="prose">
 					<PortableText value={intro} />
