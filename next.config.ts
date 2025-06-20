@@ -4,6 +4,10 @@ import { BLOG_DIR } from './src/lib/env'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+	experimental: {
+		viewTransition: true,
+	},
+
 	async redirects() {
 		return await client.fetch(groq`*[_type == 'redirect']{
 			source,

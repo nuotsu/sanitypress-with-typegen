@@ -21,7 +21,7 @@
 /* components */
 
 @utility section {
-	@apply mx-auto max-w-7xl;
+	@apply mx-auto max-w-7xl p-4;
 }
 
 @utility prose {

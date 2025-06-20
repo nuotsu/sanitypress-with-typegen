@@ -1,4 +1,5 @@
 import { Geist } from 'next/font/google'
+import { unstable_ViewTransition as ViewTransition } from 'react'
 import { SanityLive } from '@/sanity/lib/live'
 import type { Metadata } from 'next'
 import '@/app.css'
@@ -8,8 +9,6 @@ const fontSans = Geist({
 })
 
 export const metadata: Metadata = {
-	title: 'SanityPress with Typegen',
-	description: 'SanityPress with Typegen',
 	icons: 'https://fav.farm/♣️',
 }
 
@@ -20,11 +19,13 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className="bg-background text-foreground antialiased">
-				{children}
+			<ViewTransition>
+				<body className="bg-background text-foreground antialiased">
+					{children}
 
-				<SanityLive />
-			</body>
+					<SanityLive />
+				</body>
+			</ViewTransition>
 		</html>
 	)
 }
