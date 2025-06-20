@@ -1,10 +1,9 @@
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist } from 'next/font/google'
 import { SanityLive } from '@/sanity/lib/live'
 import type { Metadata } from 'next'
 import '@/app.css'
 
 const fontSans = Geist({
-	variable: '--font-sans',
 	subsets: ['latin'],
 })
 

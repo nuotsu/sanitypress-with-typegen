@@ -1,7 +1,7 @@
 import AccordionList from './accordion-list'
 
 import { createDataAttribute } from 'next-sanity'
-import type { Page, PAGE_QUERYResult } from '@/sanity/types'
+import type { PAGE_QUERYResult } from '@/sanity/types'
 
 const MODULES_MAP = {
 	'accordion-list': AccordionList,
