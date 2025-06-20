@@ -12,6 +12,12 @@ import { structureTool } from 'sanity/structure'
 import { apiVersion, dataset, projectId } from './src/sanity/env'
 import { schema } from './src/sanity/schemaTypes'
 import { structure } from './src/sanity/structure'
+import {
+	dashboardTool,
+	projectInfoWidget,
+	projectUsersWidget,
+} from '@sanity/dashboard'
+import { vercelWidget } from 'sanity-plugin-dashboard-widget-vercel'
 
 export default defineConfig({
 	title: 'SanityPress with Typegen',
@@ -22,6 +28,11 @@ export default defineConfig({
 	schema,
 	plugins: [
 		structureTool({ structure }),
+		dashboardTool({
+			name: 'info',
+			title: 'Info',
+			widgets: [projectInfoWidget(), projectUsersWidget(), vercelWidget()],
+		}),
 		// Vision is for querying with GROQ from inside the Studio
 		// https://www.sanity.io/docs/the-vision-plugin
 		visionTool({ defaultApiVersion: apiVersion }),

@@ -204,7 +204,7 @@
 		"scope": "typescriptreact",
 		"body": [
 			"import { PortableText } from 'next-sanity'\n",
-			"export default function ${TM_FILENAME_BASE}({ intro }: Partial<{ intro: any }>) {",
+			"export default function ${TM_FILENAME_BASE/^([a-z])|[-.]([a-z])/${1:/upcase}${2:/upcase}/g}({ intro }: Partial<{ intro: any }>) {",
 			"\treturn (",
 			"\t\t<section className=\"section\">",
 			"\t\t\t{intro && (",
