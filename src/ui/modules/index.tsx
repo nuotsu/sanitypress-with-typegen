@@ -1,16 +1,16 @@
 import AccordionList from './accordion-list'
 
 import { createDataAttribute } from 'next-sanity'
-import type { Page } from '@/sanity/types'
+import type { Page, PAGE_QUERYResult } from '@/sanity/types'
 
 const MODULES_MAP = {
 	'accordion-list': AccordionList,
 } as const
 
-export default function ModulesResolver({ page }: { page: Page }) {
+export default function ModulesResolver({ page }: { page: PAGE_QUERYResult }) {
 	return (
 		<>
-			{page.modules?.map((module) => {
+			{page?.modules?.map((module) => {
 				if (!module) return null
 
 				const Module = MODULES_MAP[module._type as keyof typeof MODULES_MAP]
