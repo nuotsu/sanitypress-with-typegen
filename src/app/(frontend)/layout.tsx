@@ -1,14 +1,10 @@
 import { Geist, Geist_Mono } from 'next/font/google'
+import { SanityLive } from '@/sanity/lib/live'
 import type { Metadata } from 'next'
 import '@/app.css'
 
 const fontSans = Geist({
-	variable: '--font-geist-sans',
-	subsets: ['latin'],
-})
-
-const fontMono = Geist_Mono({
-	variable: '--font-geist-mono',
+	variable: '--font-sans',
 	subsets: ['latin'],
 })
 
@@ -26,6 +22,8 @@ export default function RootLayout({
 		<html lang="en">
 			<body className="bg-background text-foreground antialiased">
 				{children}
+
+				<SanityLive />
 			</body>
 		</html>
 	)
