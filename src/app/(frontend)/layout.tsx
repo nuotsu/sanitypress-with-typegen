@@ -1,6 +1,7 @@
 import { Geist } from 'next/font/google'
 import { unstable_ViewTransition as ViewTransition } from 'react'
 import { SanityLive } from '@/sanity/lib/live'
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import '@/app.css'
 
@@ -24,6 +25,7 @@ export default function RootLayout({
 					{children}
 
 					<SanityLive />
+					<Analytics />
 				</body>
 			</ViewTransition>
 		</html>
