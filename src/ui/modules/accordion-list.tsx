@@ -38,6 +38,7 @@ export default function ({
 					</summary>
 
 					<div
+						className="py-4"
 						{...(enableSchema && {
 							itemScope: true,
 							itemProp: 'acceptedAnswer',

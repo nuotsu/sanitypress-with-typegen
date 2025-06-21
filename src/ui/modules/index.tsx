@@ -1,5 +1,6 @@
 import AccordionList from './accordion-list'
 import CustomHTML from './custom-html'
+import Prose from './prose'
 
 import { createDataAttribute } from 'next-sanity'
 import type { PAGE_QUERYResult } from '@/sanity/types'
@@ -7,6 +8,7 @@ import type { PAGE_QUERYResult } from '@/sanity/types'
 const MODULES_MAP = {
 	'accordion-list': AccordionList,
 	'custom-html': CustomHTML,
+	prose: Prose,
 } as const
 
 export default function ModulesResolver({ page }: { page: PAGE_QUERYResult }) {

@@ -7,14 +7,47 @@
 	--color-foreground: var(--foreground);
 }
 
+@custom-variant hover (&:hover);
+
+@variant headings (& :is(h1, h2, h3, h4, h5, h6));
+
 @layer base {
 	:root {
-		--background: #fff;
-		--foreground: #000;
+		--background: var(--color-neutral-100);
+		--foreground: var(--color-neutral-900);
+	}
+
+	:target {
+		&:is(h1, h2, h3, h4, h5, h6) {
+			animation: anchored-heading 2s ease-in-out forwards;
+		}
+	}
+
+	@keyframes anchored-heading {
+		0%,
+		50% {
+			background-color: color-mix(
+				in oklab,
+				var(--color-amber-400) 50%,
+				transparent
+			);
+		}
+	}
+
+	* {
+		min-width: 0;
+	}
+
+	html {
+		scroll-behavior: smooth;
 	}
 
 	summary {
 		cursor: pointer;
+	}
+
+	a {
+		color: revert;
 	}
 }
 
@@ -26,6 +59,23 @@
 
 @utility prose {
 	@apply space-y-4 leading-relaxed;
+
+	& :is(h1, h2, h3, h4, h5, h6) {
+		font-weight: bold;
+	}
+
+	& blockquote {
+		@apply border-l-4 pl-4;
+	}
+
+	& :is(ul, ol) {
+		list-style: revert;
+		padding-left: 1.5em;
+
+		& > li > ol {
+			list-style: lower-alpha;
+		}
+	}
 
 	& a {
 		@apply link;

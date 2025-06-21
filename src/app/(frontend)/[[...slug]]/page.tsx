@@ -65,5 +65,18 @@ async function getPage(slug?: string[]) {
 }
 
 const PAGE_QUERY = groq`
-	*[_type == 'page' && metadata.slug.current == $slug][0]
+	*[_type == 'page' && metadata.slug.current == $slug][0]{
+		...,
+		modules[]{
+			...,
+			_type == 'prose' => {
+				'headings': select(
+					tableOfContents in ['left', 'right'] => content[style in ['h2', 'h3', 'h4', 'h5', 'h6']]{
+						style,
+						'text': pt::text(@)
+					}
+				),
+			}
+		}
+	}
 `

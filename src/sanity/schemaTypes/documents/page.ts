@@ -23,7 +23,11 @@ export default defineType({
 			name: 'modules',
 			type: 'array',
 			group: 'content',
-			of: [{ type: 'accordion-list' }, { type: 'custom-html' }],
+			of: [
+				{ type: 'accordion-list' },
+				{ type: 'custom-html' },
+				{ type: 'prose' },
+			],
 		}),
 		defineField({
 			name: 'metadata',
