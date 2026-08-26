@@ -1,6 +1,6 @@
 {
 	"name": "sanitypress",
-	"version": "0.0.138",
+	"version": "0.0.139",
 	"private": true,
 	"scripts": {
 		"dev": "next dev",
@@ -13,6 +13,7 @@
 	},
 	"dependencies": {
 		"@portabletext/to-html": "^6.0.0",
+		"@sanity/asset-utils": "^2.3.0",
 		"@sanity/assist": "^6.1.21",
 		"@sanity/block-insert-picker": "^1.0.8",
 		"@sanity/cli": "^8.4.1",
