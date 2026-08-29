@@ -13,48 +13,30 @@
 	@media (width < 48rem) {
 		display: grid;
 		grid-template-rows: 0fr;
-		transition: grid-template-rows var(--default-transition-duration)
-			var(--default-transition-timing-function);
+		transition: grid-template-rows var(--default-transition-duration) var(--default-transition-timing-function);
 
-		> * {
+		>* {
 			overflow: clip;
 			min-block-size: 0;
 			transition:
 				visibility var(--default-transition-duration),
-				opacity var(--default-transition-duration)
-					var(--default-transition-timing-function),
-				translate var(--default-transition-duration)
-					var(--default-transition-timing-function);
+				opacity var(--default-transition-duration) var(--default-transition-timing-function),
+				translate var(--default-transition-duration) var(--default-transition-timing-function);
 			visibility: hidden;
 			opacity: 0;
 			translate: 0 -1rem;
 		}
 	}
 
-	@media (width >= 48rem) {
-		display: contents;
+	:global(body:has(#header-open:checked)) & {
+		@media (width < 48rem) {
+			grid-template-rows: 1fr;
 
-		> * {
-			display: contents;
+			>* {
+				visibility: visible;
+				opacity: 1;
+				translate: 0;
+			}
 		}
-	}
-}
-
-:global(body:has(#header-open:checked)) .menu {
-	@media (width < 48rem) {
-		grid-template-rows: 1fr;
-
-		> * {
-			visibility: visible;
-			opacity: 1;
-			translate: 0;
-		}
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.menu,
-	.menu > * {
-		transition-duration: 0s;
 	}
 }
