@@ -7,7 +7,7 @@ export default defineType({
 	title: 'Announcement',
 	type: 'document',
 	icon: BellIcon,
-	groups: [{ name: 'content' }, { name: 'options' }],
+	groups: [{ name: 'content', default: true }, { name: 'options' }],
 	fields: [
 		defineField({
 			name: 'attributes',
