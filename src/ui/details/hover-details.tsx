@@ -3,7 +3,6 @@
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
 import { useIsDesktop } from '@/hooks/useMatchMedia'
-import { cn } from '@/lib/utils'
 import css from './hover-details.module.css'
 
 /**
@@ -51,7 +50,9 @@ export default function ({
 
 	return (
 		<details
-			className={cn(safeAreaOnHover && css.safearea, className)}
+			className={[safeAreaOnHover && css.safearea, className]
+				.filter(Boolean)
+				.join(' ')}
 			open={open}
 			{...events}
 			{...props}

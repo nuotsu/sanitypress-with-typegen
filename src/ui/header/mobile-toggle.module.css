@@ -1,0 +1,7 @@
+:global(#header-open:checked) ~ .whenClosed {
+	display: none;
+}
+
+:global(#header-open:not(:checked)) ~ .whenOpen {
+	display: none;
+}

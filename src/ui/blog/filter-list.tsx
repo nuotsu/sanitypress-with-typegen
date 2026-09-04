@@ -1,4 +1,5 @@
 import { groq } from 'next-sanity'
+import * as stylex from '@stylexjs/stylex'
 import { sanityFetch, type DynamicFetchOptions } from '@/sanity/lib/live'
 import { CATEGORIES_QUERY_RESULT } from '@/sanity/types'
 import Filter from './filter'
@@ -13,7 +14,7 @@ export default async function ({ perspective, stega }: DynamicFetchOptions) {
 	const categories = data as CATEGORIES_QUERY_RESULT
 
 	return (
-		<div className="flex flex-wrap items-center gap-2">
+		<div {...stylex.props(styles.root)}>
 			<Filter>All</Filter>
 
 			{categories?.map((category) => (
@@ -29,3 +30,12 @@ const CATEGORIES_QUERY = groq`
 		&& count(*[_type == 'blog.post' && references(^._id)]) > 0
 	]|order(title)
 `
+
+const styles = stylex.create({
+	root: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		gap: '0.5rem',
+	},
+})

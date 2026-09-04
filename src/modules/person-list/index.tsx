@@ -1,9 +1,11 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
 import { portableTextToSchemaHtml } from '@/lib/portable-text-to-schema-html'
-import { cn } from '@/lib/utils'
 import { Module } from '@/modules'
 import { urlFor } from '@/sanity/lib/image'
 import type { Person, PersonList } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { mq } from '../../styles/breakpoints.stylex'
 import Img from '@/ui/img'
 
 export default function ({
@@ -13,6 +15,11 @@ export default function ({
 	...props
 }: PersonList) {
 	const people = (p as unknown as Person[]) ?? []
+	const headerSx = stylex.props(shared.prose)
+	const gridSx = stylex.props(
+		styles.grid,
+		columns ? styles.gridColumns : styles.gridAuto,
+	)
 
 	const schemaPersons = people
 		.filter((person) => person.enableSchema && person.name)
@@ -29,7 +36,7 @@ export default function ({
 		}))
 
 	return (
-		<Module className="section space-y-8" {...props}>
+		<Module {...stylex.props(shared.section, styles.root)} {...props}>
 			{schemaPersons.length > 0 && (
 				<script
 					type="application/ld+json"
@@ -42,41 +49,94 @@ export default function ({
 				/>
 			)}
 
-			<header className="prose">
+			<header
+				{...headerSx}
+				className={[headerSx.className, 'prose'].filter(Boolean).join(' ')}
+			>
 				<PortableText value={intro} />
 			</header>
 
 			<div
-				className={cn(
-					'grid items-start gap-8 md:grid-cols-2',
-					columns
-						? 'lg:grid-cols-[repeat(var(--columns,1),minmax(0px,1fr))]'
-						: 'lg:grid-cols-[repeat(auto-fit,minmax(var(--container-3xs),1fr))]',
-				)}
-				style={{ '--columns': columns }}
+				{...gridSx}
+				style={{
+					...gridSx.style,
+					['--columns' as string]: columns,
+				}}
 			>
-				{people.map(({ name, title, content, image }, key) => (
-					<article className="space-y-4" key={key}>
-						<Img
-							className="aspect-square w-full object-cover"
-							width={400}
-							image={image}
-							alt={name ?? ''}
-						/>
+				{people.map(({ name, title, content, image }, key) => {
+					const contentSx = stylex.props(shared.prose)
 
-						<dl>
-							<dt className="h3">{name}</dt>
-							{title && <dd>{title}</dd>}
-						</dl>
+					return (
+						<article {...stylex.props(styles.card)} key={key}>
+							<Img
+								{...stylex.props(styles.image)}
+								width={400}
+								image={image}
+								alt={name ?? ''}
+							/>
 
-						{content && (
-							<div className="prose">
-								<PortableText value={content} />
-							</div>
-						)}
-					</article>
-				))}
+							<dl>
+								<dt {...stylex.props(shared.h3)}>{name}</dt>
+								{title && <dd>{title}</dd>}
+							</dl>
+
+							{content && (
+								<div
+									{...contentSx}
+									className={[contentSx.className, 'prose']
+										.filter(Boolean)
+										.join(' ')}
+								>
+									<PortableText value={content} />
+								</div>
+							)}
+						</article>
+					)
+				})}
 			</div>
 		</Module>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: '2rem',
+	},
+	grid: {
+		display: 'grid',
+		alignItems: 'flex-start',
+		gap: '2rem',
+		gridTemplateColumns: {
+			default: null,
+			[mq.md]: 'repeat(2, minmax(0, 1fr))',
+		},
+	},
+	gridColumns: {
+		gridTemplateColumns: {
+			default: null,
+			[mq.md]: 'repeat(2, minmax(0, 1fr))',
+			'@media (min-width: 64rem)':
+				'repeat(var(--columns, 1), minmax(0px, 1fr))',
+		},
+	},
+	gridAuto: {
+		gridTemplateColumns: {
+			default: null,
+			[mq.md]: 'repeat(2, minmax(0, 1fr))',
+			'@media (min-width: 64rem)':
+				'repeat(auto-fit, minmax(16rem, 1fr))',
+		},
+	},
+	card: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: '1rem',
+	},
+	image: {
+		aspectRatio: '1',
+		width: '100%',
+		objectFit: 'cover',
+	},
+})

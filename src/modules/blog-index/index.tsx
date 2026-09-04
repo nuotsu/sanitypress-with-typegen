@@ -1,8 +1,8 @@
 import type { Get } from '@sanity/codegen'
+import * as stylex from '@stylexjs/stylex'
 import { groq, PortableText } from 'next-sanity'
 import { Suspense } from 'react'
 import { ROUTES } from '@/lib/env'
-import { cn } from '@/lib/utils'
 import { Module, type ModuleProps } from '@/modules'
 import { sanityFetch, type DynamicFetchOptions } from '@/sanity/lib/live'
 import { BLOG_POST_FRAGMENT_QUERY } from '@/sanity/lib/queries'
@@ -11,6 +11,8 @@ import type {
 	BLOG_INDEX_QUERY_RESULT,
 	PAGE_QUERY_RESULT,
 } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { spacing } from '../../styles/tokens.stylex'
 import FilterList from '@/ui/blog/filter-list'
 import Loading from '@/ui/loading'
 import PaginatedPosts from './paginated-posts'
@@ -45,19 +47,27 @@ export default async function ({
 		.map((id) => featuredById.get(id))
 		.filter(Boolean) as BLOG_FEATURED_QUERY_RESULT
 
+	const introSx = stylex.props(shared.prose)
+
 	return (
-		<Module className={cn('section space-y-lh', intro && 'pt-4')} {...props}>
+		<Module
+			{...stylex.props(shared.section, styles.root, intro && styles.withIntro)}
+			{...props}
+		>
 			{intro && (
-				<header className="prose">
+				<header
+					{...introSx}
+					className={[introSx.className, 'prose'].filter(Boolean).join(' ')}
+				>
 					<PortableText value={intro} />
 				</header>
 			)}
 
-			<div className="gap-lh grid">
-				<fieldset className="flex flex-wrap items-end justify-between gap-4">
+			<div {...stylex.props(styles.grid)}>
+				<fieldset {...stylex.props(styles.fieldset)}>
 					<Suspense
 						fallback={
-							<Loading className="p-[.25em_.5em]">
+							<Loading xstyle={styles.loadingCategories}>
 								Loading categories...
 							</Loading>
 						}
@@ -132,3 +142,31 @@ const BLOG_FEATURED_QUERY = groq`
 		'slug': $blogDir + metadata.slug.current,
 	}
 `
+
+const styles = stylex.create({
+	root: {
+		display: 'grid',
+		rowGap: spacing.lh,
+	},
+	withIntro: {
+		paddingTop: '1rem',
+	},
+	grid: {
+		display: 'grid',
+		gap: spacing.lh,
+	},
+	fieldset: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		alignItems: 'flex-end',
+		justifyContent: 'space-between',
+		gap: '1rem',
+		borderWidth: 0,
+		padding: 0,
+		margin: 0,
+		minWidth: 0,
+	},
+	loadingCategories: {
+		padding: '0.25em 0.5em',
+	},
+})

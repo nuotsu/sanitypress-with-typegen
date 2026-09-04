@@ -1,11 +1,12 @@
 'use client'
 
+import * as stylex from '@stylexjs/stylex'
 import { useState, type ComponentProps } from 'react'
 import { VscCheck, VscCopy } from 'react-icons/vsc'
-import { cn } from '@/lib/utils'
 
 export default function ({
 	value,
+	xstyle,
 	className,
 	children = <VscCopy />,
 	childrenWhenCopied = <VscCheck />,
@@ -13,16 +14,19 @@ export default function ({
 }: {
 	value?: string
 	childrenWhenCopied?: React.ReactNode
-} & ComponentProps<'button'>) {
+	xstyle?: stylex.StyleXStyles
+	className?: string
+} & Omit<ComponentProps<'button'>, 'className'>) {
 	const [copied, setCopied] = useState(false)
+	const sx = stylex.props(styles.root, copied && styles.copied, xstyle)
 
 	return (
 		<button
-			className={cn(
-				'cursor-copy',
-				copied && 'copied pointer-events-none',
-				className,
-			)}
+			{...props}
+			{...sx}
+			className={[sx.className, copied && 'copied', className]
+				.filter(Boolean)
+				.join(' ')}
 			onClick={async () => {
 				if (typeof window === 'undefined' || !value) return
 
@@ -32,9 +36,17 @@ export default function ({
 				setTimeout(() => setCopied(false), 1000)
 			}}
 			title="Click to copy"
-			{...props}
 		>
 			{copied ? childrenWhenCopied : children}
 		</button>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		cursor: 'copy',
+	},
+	copied: {
+		pointerEvents: 'none',
+	},
+})

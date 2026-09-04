@@ -1,5 +1,7 @@
 import { VscChevronDown } from 'react-icons/vsc'
-import { cn } from '@/lib/utils'
+import * as stylex from '@stylexjs/stylex'
+import { colors } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import MobileClosedDetails from '@/ui/details/mobile-closed-details'
 import ToCItem from './toc-item'
 import css from './toc.module.css'
@@ -20,17 +22,24 @@ export default function ({
 } & React.ComponentProps<'details'>) {
 	if (!headings?.length) return null
 
+	const list = stylex.props(styles.list)
+
 	return (
 		<MobileClosedDetails
-			className={cn('table-of-contents accordion', className)}
 			{...props}
+			className={['table-of-contents', 'accordion', className]
+				.filter(Boolean)
+				.join(' ')}
 		>
-			<summary className="md:bg-background top-0 z-1 py-1 font-bold md:sticky">
+			<summary {...stylex.props(styles.summary)}>
 				{summary}
-				<VscChevronDown className="md:hidden" />
+				<VscChevronDown {...stylex.props(styles.chevron)} />
 			</summary>
 
-			<ol className={cn(css.list, 'leading-tight')}>
+			<ol
+				{...list}
+				className={[list.className, css.list].filter(Boolean).join(' ')}
+			>
 				{headings?.map((heading, key) => (
 					<ToCItem heading={heading} key={key} />
 				))}
@@ -38,3 +47,29 @@ export default function ({
 		</MobileClosedDetails>
 	)
 }
+
+const styles = stylex.create({
+	summary: {
+		top: 0,
+		zIndex: 1,
+		paddingBlock: '0.25rem',
+		fontWeight: 700,
+		backgroundColor: {
+			default: null,
+			[mq.md]: colors.background,
+		},
+		position: {
+			default: null,
+			[mq.md]: 'sticky',
+		},
+	},
+	chevron: {
+		display: {
+			default: null,
+			[mq.md]: 'none',
+		},
+	},
+	list: {
+		lineHeight: 1.25,
+	},
+})

@@ -1,3 +1,6 @@
+import * as stylex from '@stylexjs/stylex'
+import { spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import type { DynamicFetchOptions } from '@/sanity/lib/live'
 import { getSite } from '@/sanity/lib/queries'
 import type { LinkList as LinkListType } from '@/sanity/types'
@@ -9,7 +12,7 @@ export default async function ({ perspective, stega }: DynamicFetchOptions) {
 
 	return (
 		<nav>
-			<ul className="gap-y-lh flex items-start justify-center gap-x-[2lh] max-md:flex-col">
+			<ul {...stylex.props(styles.list)}>
 				{site?.footer?.items?.map((item, i) => {
 					switch (item._type) {
 						case 'link':
@@ -17,7 +20,7 @@ export default async function ({ perspective, stega }: DynamicFetchOptions) {
 								<li key={`${item._key}-${i}`}>
 									<SanityLink
 										link={item as SanityLinkType}
-										className="text-current hover:underline"
+										{...stylex.props(styles.link)}
 									/>
 								</li>
 							)
@@ -38,3 +41,24 @@ export default async function ({ perspective, stega }: DynamicFetchOptions) {
 		</nav>
 	)
 }
+
+const styles = stylex.create({
+	list: {
+		display: 'flex',
+		alignItems: 'flex-start',
+		justifyContent: 'center',
+		columnGap: '2lh',
+		rowGap: spacing.lh,
+		flexDirection: {
+			default: 'column',
+			[mq.md]: 'row',
+		},
+	},
+	link: {
+		color: 'currentColor',
+		textDecorationLine: {
+			default: null,
+			':hover': 'underline',
+		},
+	},
+})

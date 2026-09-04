@@ -1,5 +1,5 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
-import { cn } from '@/lib/utils'
 import CustomHTML from '@/modules/custom-html'
 import {
 	getDynamicFetchOptions,
@@ -7,6 +7,9 @@ import {
 } from '@/sanity/lib/live'
 import { getSite } from '@/sanity/lib/queries'
 import type { Cta } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import CTAList from '@/ui/cta-list'
 import Logo from '@/ui/logo'
 import css from './header.module.css'
@@ -28,17 +31,35 @@ async function CachedHeader({ perspective, stega }: DynamicFetchOptions) {
 	const site = await getSite({ perspective, stega })
 	const blurb = site?.header?.blurb
 
+	const wrapperSx = stylex.props(styles.wrapper)
+	const rootSx = stylex.props(shared.section, styles.root)
+	const topSx = stylex.props(styles.top)
+	const menuSx = stylex.props(styles.menu)
+	const menuInnerSx = stylex.props(styles.menuInner)
+	const ctasSx = stylex.props(styles.ctas)
+	const blurbSx = stylex.props(shared.prose)
 	return (
-		<Wrapper className="layout-header bg-background/80 max-md:header-open:bg-background max-md:header-open:shadow-xl md:has-[nav>details:open]:bg-background sticky top-0 z-10 backdrop-blur-[2px] transition-colors">
+		<Wrapper
+			{...wrapperSx}
+			className={[
+				wrapperSx.className,
+				'layout-header',
+				css.wrapperOpen,
+				css.wrapperNavOpen,
+			]
+				.filter(Boolean)
+				.join(' ')}
+		>
 			<div
-				className={cn(
-					css.root,
-					'section grid items-center gap-x-4 py-0 max-md:max-h-svh max-md:overflow-y-auto',
-				)}
+				{...rootSx}
+				className={[rootSx.className, css.root].filter(Boolean).join(' ')}
 			>
-				<div className="max-md:header-open:bg-background sticky top-0 z-1 flex items-center justify-between gap-4 py-4 [grid-area:top]">
+				<div
+					{...topSx}
+					className={[topSx.className, css.topOpen].filter(Boolean).join(' ')}
+				>
 					<Logo
-						className="max-w-max grow has-[img]:-my-2 has-[img]:h-[2lh]"
+						xstyle={styles.logo}
 						perspective={perspective}
 						stega={stega}
 					/>
@@ -47,22 +68,29 @@ async function CachedHeader({ perspective, stega }: DynamicFetchOptions) {
 
 				<div
 					id="mobile-menu"
-					className={cn(
-						css.menu,
-						'max-md:header-open:pb-4 [grid-area:menu] md:contents',
-					)}
+					{...menuSx}
+					className={[menuSx.className, css.menu, css.menuOpen]
+						.filter(Boolean)
+						.join(' ')}
 				>
-					<div className="md:contents">
+					<div {...menuInnerSx}>
 						<Navigation perspective={perspective} stega={stega} />
 
-						<div className="flex items-center gap-[.5em_1em] [grid-area:ctas] max-md:flex-col">
+						<div {...ctasSx}>
 							{blurb && (
-								<div className="prose">
+								<div
+									{...blurbSx}
+									className={[blurbSx.className, 'prose']
+										.filter(Boolean)
+										.join(' ')}
+								>
 									<PortableText
 										value={blurb}
 										components={{
 											types: {
-												'custom-html': ({ value }) => <CustomHTML {...value} />,
+												'custom-html': ({ value }) => (
+													<CustomHTML {...value} />
+												),
 											},
 										}}
 									/>
@@ -71,7 +99,7 @@ async function CachedHeader({ perspective, stega }: DynamicFetchOptions) {
 
 							<CTAList
 								ctas={site?.ctas as Cta[]}
-								className="max-sm:w-full max-sm:*:w-full"
+								className={css.ctasFull}
 							/>
 						</div>
 					</div>
@@ -80,3 +108,76 @@ async function CachedHeader({ perspective, stega }: DynamicFetchOptions) {
 		</Wrapper>
 	)
 }
+
+const styles = stylex.create({
+	wrapper: {
+		position: 'sticky',
+		top: 0,
+		zIndex: 10,
+		backgroundColor: `color-mix(in oklab, ${colors.background} 80%, transparent)`,
+		backdropFilter: 'blur(2px)',
+		transitionProperty: 'color, background-color, border-color, box-shadow',
+		transitionDuration: '150ms',
+		transitionTimingFunction: 'cubic-bezier(0.4, 0, 0.2, 1)',
+	},
+	root: {
+		display: 'grid',
+		alignItems: 'center',
+		columnGap: '1rem',
+		paddingBlock: 0,
+		maxHeight: {
+			default: null,
+			[mq.maxMd]: '100svh',
+		},
+		overflowY: {
+			default: null,
+			[mq.maxMd]: 'auto',
+		},
+	},
+	top: {
+		position: 'sticky',
+		top: 0,
+		zIndex: 1,
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		gap: '1rem',
+		paddingBlock: '1rem',
+		gridArea: 'top',
+	},
+	logo: {
+		maxWidth: 'max-content',
+		flexGrow: 1,
+		marginBlock: {
+			default: null,
+			':has(img)': '-0.5rem',
+		},
+		height: {
+			default: null,
+			':has(img)': '2lh',
+		},
+	},
+	menu: {
+		gridArea: 'menu',
+		display: {
+			default: null,
+			[mq.md]: 'contents',
+		},
+	},
+	menuInner: {
+		display: {
+			default: null,
+			[mq.md]: 'contents',
+		},
+	},
+	ctas: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: '.5em 1em',
+		gridArea: 'ctas',
+		flexDirection: {
+			default: null,
+			[mq.maxMd]: 'column',
+		},
+	},
+})

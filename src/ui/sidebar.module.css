@@ -1,0 +1,20 @@
+/* Complex :has() child-targeting — StyleX cannot style descendants */
+.root:has(.table-of-contents:not([open])) > *:not(.table-of-contents) {
+	display: none;
+}
+
+@media (min-width: 48rem) {
+	.root:has(.table-of-contents:not([open])) > *:not(.table-of-contents) {
+		display: revert;
+	}
+}
+
+.root > [data-module='callout'] {
+	padding: 0;
+}
+
+.root .table-of-contents:not([open]) {
+	@media (max-width: 47.999rem) {
+		margin-bottom: 0;
+	}
+}

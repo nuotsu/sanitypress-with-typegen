@@ -1,8 +1,11 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
-import { cn } from '@/lib/utils'
 import { Module } from '@/modules'
 import CustomHTML from '@/modules/custom-html'
 import type { Prose } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors, spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import CTAList from '@/ui/cta-list'
 import Sidebar from '@/ui/sidebar'
 import TableOfContents from '@/ui/table-of-contents'
@@ -17,21 +20,19 @@ export default function ({
 	headings,
 	...props
 }: Prose & React.ComponentProps<typeof TableOfContents>) {
+	const proseSx = stylex.props(shared.prose, styles.article)
+
 	return (
 		<Module
-			className={cn(
-				'section',
-				sidebar && 'gap-lh flex max-md:flex-col md:items-start',
-			)}
+			{...stylex.props(shared.section, sidebar && styles.withSidebar)}
 			{...props}
 		>
-			<Sidebar
-				{...sidebar}
-				headings={headings}
-				className="max-md:p-ch max-md:bg-current/5"
-			/>
+			<Sidebar {...sidebar} headings={headings} xstyle={styles.sidebar} />
 
-			<article className="prose mx-auto w-full max-w-3xl">
+			<article
+				{...proseSx}
+				className={[proseSx.className, 'prose'].filter(Boolean).join(' ')}
+			>
 				<PortableText
 					value={content ?? []}
 					components={{
@@ -56,3 +57,33 @@ export default function ({
 		</Module>
 	)
 }
+
+const styles = stylex.create({
+	withSidebar: {
+		display: 'flex',
+		gap: spacing.lh,
+		flexDirection: {
+			default: 'column',
+			[mq.md]: 'row',
+		},
+		alignItems: {
+			default: null,
+			[mq.md]: 'flex-start',
+		},
+	},
+	sidebar: {
+		padding: {
+			default: spacing.ch,
+			[mq.md]: null,
+		},
+		backgroundColor: {
+			default: colors.current05,
+			[mq.md]: null,
+		},
+	},
+	article: {
+		marginInline: 'auto',
+		width: '100%',
+		maxWidth: '48rem',
+	},
+})

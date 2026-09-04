@@ -1,5 +1,6 @@
 'use client'
 
+import * as stylex from '@stylexjs/stylex'
 import { useQueryState } from 'nuqs'
 import { usePagination } from '@/hooks/usePagination'
 import type {
@@ -7,6 +8,9 @@ import type {
 	BLOG_INDEX_QUERY_RESULT,
 	BlogPost,
 } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors, spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import PostPreview from '@/ui/blog/post-preview'
 import PostPreviewLarge from '@/ui/blog/post-preview-large'
 
@@ -62,6 +66,12 @@ export default function ({
 		itemsPerPage: postsPerPage,
 	})
 
+	const orderFirstClass = stylex.props(styles.orderFirst).className
+	const hrSx = stylex.props(styles.hr, styles.orderFirst)
+	const fadeClass = stylex.props(shared.animFade).className
+	const paginationSx = stylex.props(styles.pagination)
+	const buttonClassName = stylex.props(styles.pageButton).className
+
 	return (
 		<>
 			{currentPage === 1 && !category && heroPost && (
@@ -69,26 +79,80 @@ export default function ({
 					<PostPreviewLarge
 						post={heroPost as unknown as BlogPost}
 						isFeatured={showFeatured}
-						className="md:order-first"
+						className={orderFirstClass}
 					/>
-					<hr className="max-md:full-bleed border-stroke md:order-first" />
+					<hr {...hrSx} />
 				</>
 			)}
 
-			<ul className="gap-x-lh grid items-stretch gap-y-[2lh] sm:grid-cols-[repeat(auto-fill,minmax(var(--container-xs),1fr))]">
+			<ul {...stylex.props(styles.grid)}>
 				{paginatedItems?.map((post) => (
 					<PostPreview
 						post={post as unknown as BlogPost}
-						className="anim-fade"
+						className={fadeClass}
 						key={post._id}
 					/>
 				))}
 			</ul>
 
-			<Pagination
-				className="gap-ch flex items-center justify-center tabular-nums"
-				buttonClassName="cursor-pointer not-disabled:hover:underline disabled:opacity-50"
-			/>
+			<Pagination {...paginationSx} buttonClassName={buttonClassName} />
 		</>
 	)
 }
+
+const styles = stylex.create({
+	orderFirst: {
+		order: {
+			default: null,
+			[mq.md]: -1,
+		},
+	},
+	hr: {
+		borderWidth: 0,
+		borderTopWidth: 1,
+		borderTopStyle: 'solid',
+		borderTopColor: colors.stroke,
+		width: {
+			default: '100vw',
+			[mq.md]: 'auto',
+		},
+		marginInline: {
+			default: 'calc(50% - 50vw)',
+			[mq.md]: 0,
+		},
+	},
+	grid: {
+		display: 'grid',
+		alignItems: 'stretch',
+		columnGap: spacing.lh,
+		rowGap: '2lh',
+		gridTemplateColumns: {
+			default: '1fr',
+			[mq.sm]: 'repeat(auto-fill, minmax(20rem, 1fr))',
+		},
+		listStyle: 'none',
+		padding: 0,
+		margin: 0,
+	},
+	pagination: {
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'center',
+		gap: spacing.ch,
+		fontVariantNumeric: 'tabular-nums',
+	},
+	pageButton: {
+		cursor: {
+			default: 'pointer',
+			':disabled': 'default',
+		},
+		opacity: {
+			default: 1,
+			':disabled': 0.5,
+		},
+		textDecorationLine: {
+			default: 'none',
+			':not(:disabled):hover': 'underline',
+		},
+	},
+})

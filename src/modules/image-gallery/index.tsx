@@ -1,7 +1,10 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
-import { cn } from '@/lib/utils'
 import { Module } from '@/modules'
 import type { ImageGallery } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors, spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import Eyebrow from '@/ui/eyebrow'
 import Img from '@/ui/img'
 import Track from './track'
@@ -15,16 +18,21 @@ export default function ({
 	alternateScrollDirection,
 	...props
 }: ImageGallery) {
+	const headerSx = stylex.props(shared.prose, styles.header)
+
 	return (
-		<Module className="section space-y-8" {...props}>
+		<Module {...stylex.props(shared.section, styles.root)} {...props}>
 			{(eyebrow || intro) && (
-				<header className="prose mx-auto max-w-3xl text-center">
+				<header
+					{...headerSx}
+					className={[headerSx.className, 'prose'].filter(Boolean).join(' ')}
+				>
 					<Eyebrow value={eyebrow} />
 					<PortableText value={intro ?? []} />
 				</header>
 			)}
 
-			<div className="space-y-px">
+			<div {...stylex.props(styles.rows)}>
 				{rows?.map((row, rowIndex) => {
 					const images = row.images?.filter((image) => image?.asset) ?? []
 					if (!images.length) return null
@@ -37,15 +45,15 @@ export default function ({
 					const imageSet = Array.from({ length: copies }, (_, copy) =>
 						images.map((image) => (
 							<figure
-								className={cn(
-									'relative shrink-0',
-									!autoScroll && 'snap-center',
+								{...stylex.props(
+									styles.figure,
+									!autoScroll && styles.figureSnap,
 								)}
 								aria-hidden={copy > 0 || undefined}
 								key={`${image._key}-${copy}`}
 							>
 								<Img
-									className="h-75 w-auto max-w-none object-cover"
+									{...stylex.props(styles.image)}
 									image={image}
 									height={300}
 									sizes="(max-width: 640px) 70vw, 400px"
@@ -53,7 +61,7 @@ export default function ({
 									alt={image.alt ?? ''}
 								/>
 								{image.caption && (
-									<figcaption className="text-background bg-foreground/60 m-ch absolute bottom-0 left-0 p-[.25em_.5em] text-xs backdrop-blur">
+									<figcaption {...stylex.props(styles.caption)}>
 										{image.caption}
 									</figcaption>
 								)}
@@ -61,22 +69,15 @@ export default function ({
 						)),
 					)
 
+					const rowSx = stylex.props(
+						styles.row,
+						autoScroll ? styles.rowScroll : styles.rowManual,
+					)
+
 					return (
-						<div
-							className={cn(
-								'max-md:full-bleed mx-auto items-end gap-px',
-								autoScroll
-									? 'overflow-hidden'
-									: 'no-scrollbar flex snap-x snap-mandatory overflow-x-auto before:m-auto after:m-auto max-md:px-px',
-							)}
-							key={row._key}
-						>
+						<div {...rowSx} key={row._key}>
 							{autoScroll ? (
-								<Track
-									reverse={reverse}
-									duration={duration}
-									className="items-end gap-px"
-								>
+								<Track reverse={reverse} duration={duration} xstyle={styles.track}>
 									{imageSet}
 								</Track>
 							) : (
@@ -89,3 +90,83 @@ export default function ({
 		</Module>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: '2rem',
+	},
+	header: {
+		marginInline: 'auto',
+		maxWidth: '48rem',
+		textAlign: 'center',
+	},
+	rows: {
+		display: 'flex',
+		flexDirection: 'column',
+		gap: '1px',
+	},
+	row: {
+		width: {
+			default: null,
+			[mq.maxMd]: '100vw',
+		},
+		marginInline: {
+			default: 'auto',
+			[mq.maxMd]: 'calc(50% - 50vw)',
+		},
+		alignItems: 'flex-end',
+		gap: '1px',
+	},
+	rowScroll: {
+		overflow: 'hidden',
+	},
+	rowManual: {
+		display: 'flex',
+		overflowX: 'auto',
+		scrollSnapType: 'x mandatory',
+		scrollbarWidth: 'none',
+		paddingInline: {
+			default: '1px',
+			[mq.md]: null,
+		},
+		'::before': {
+			content: '""',
+			margin: 'auto',
+		},
+		'::after': {
+			content: '""',
+			margin: 'auto',
+		},
+	},
+	track: {
+		alignItems: 'flex-end',
+		gap: '1px',
+	},
+	figure: {
+		position: 'relative',
+		flexShrink: 0,
+	},
+	figureSnap: {
+		scrollSnapAlign: 'center',
+	},
+	image: {
+		height: '18.75rem',
+		width: 'auto',
+		maxWidth: 'none',
+		objectFit: 'cover',
+	},
+	caption: {
+		position: 'absolute',
+		bottom: 0,
+		left: 0,
+		margin: spacing.ch,
+		paddingBlock: '0.25em',
+		paddingInline: '0.5em',
+		fontSize: '0.75rem',
+		color: colors.background,
+		backgroundColor: colors.foreground60,
+		backdropFilter: 'blur(8px)',
+	},
+})

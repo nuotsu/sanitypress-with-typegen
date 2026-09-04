@@ -1,7 +1,7 @@
 .body {
 	@media (width >=48rem) {
 		grid-template-columns: [bleed-start] 1fr [content-start] min(100%,
-				var(--container-2xl)) [content-end] 1fr [bleed-end];
+				42rem) [content-end] 1fr [bleed-end];
 
 		&>* {
 			grid-column: content;

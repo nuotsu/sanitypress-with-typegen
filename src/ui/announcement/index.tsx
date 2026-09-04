@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
 import { Module } from '@/modules'
 import {
@@ -6,6 +7,8 @@ import {
 } from '@/sanity/lib/live'
 import { getSite } from '@/sanity/lib/queries'
 import type { Cta } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors } from '../../styles/tokens.stylex'
 import CTAList from '@/ui/cta-list'
 import ElementHeight from '@/ui/element-height'
 
@@ -25,17 +28,22 @@ async function CachedAnnouncement({ perspective, stega }: DynamicFetchOptions) {
 
 	if (!announcement) return null
 
+	const proseSx = stylex.props(shared.prose)
+
 	return (
 		<Module
 			as={ElementHeightAside}
 			_type={announcement._type}
 			_key={announcement._id}
 			attributes={announcement.attributes}
-			className="bg-foreground text-background"
+			{...stylex.props(styles.root)}
 		>
-			<div className="section flex flex-wrap items-center justify-center gap-x-4 gap-y-2 py-2 text-center text-sm">
+			<div {...stylex.props(shared.section, styles.inner)}>
 				{announcement.content && (
-					<div className="prose">
+					<div
+						{...proseSx}
+						className={[proseSx.className, 'prose'].filter(Boolean).join(' ')}
+					>
 						<PortableText value={announcement.content} />
 					</div>
 				)}
@@ -49,3 +57,21 @@ async function CachedAnnouncement({ perspective, stega }: DynamicFetchOptions) {
 function ElementHeightAside(props: React.ComponentProps<typeof ElementHeight>) {
 	return <ElementHeight as="aside" cssVar="--announcement-height" {...props} />
 }
+
+const styles = stylex.create({
+	root: {
+		backgroundColor: colors.foreground,
+		color: colors.background,
+	},
+	inner: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		justifyContent: 'center',
+		columnGap: '1rem',
+		rowGap: '0.5rem',
+		paddingBlock: '0.5rem',
+		textAlign: 'center',
+		fontSize: '0.875rem',
+	},
+})

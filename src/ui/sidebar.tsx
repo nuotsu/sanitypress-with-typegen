@@ -1,46 +1,47 @@
+import * as stylex from '@stylexjs/stylex'
 import { stegaClean } from 'next-sanity'
-import { cn } from '@/lib/utils'
 import type { Sidebar } from '@/sanity/types'
+import { spacing } from '../styles/tokens.stylex'
+import { mq } from '../styles/breakpoints.stylex'
 import Callout from '@/modules/callout'
 import CustomHTML from '@/modules/custom-html'
 import TableOfContents, { type ToCHeadings } from './table-of-contents'
+import css from './sidebar.module.css'
 
 export default function ({
 	modules,
 	position: p,
 	headings,
+	xstyle,
 	className,
 }: {
 	headings: ToCHeadings
-} & Partial<Sidebar> &
-	React.ComponentProps<'aside'>) {
+	xstyle?: stylex.StyleXStyles
+	className?: string
+} & Partial<Sidebar>) {
 	const position = stegaClean(p)
 
 	if (!position) return null
 
+	const sx = stylex.props(
+		styles.root,
+		position === 'right' && styles.right,
+		xstyle,
+	)
+
 	return (
 		<aside
-			className={cn(
-				'md:sticky-below-header space-y-lh shrink-0 [--offset:1rem] has-[.table-of-contents:not(:open)]:*:not-[.table-of-contents]:hidden md:w-[24ch]',
-				position === 'right' && 'md:order-last',
-				className,
-			)}
+			{...sx}
+			className={[sx.className, css.root, className].filter(Boolean).join(' ')}
+			style={{ ...sx.style, ['--offset' as string]: '1rem' }}
 		>
 			{modules?.map((module, i) => {
 				switch (module._type) {
 					case 'callout':
-						return (
-							<Callout
-								key={`${module._key}-${i}`}
-								{...module}
-								className="p-0"
-							/>
-						)
+						return <Callout key={`${module._key}-${i}`} {...module} />
 
 					case 'custom-html':
-						return (
-							<CustomHTML key={`${module._key}-${i}`} {...module} />
-						)
+						return <CustomHTML key={`${module._key}-${i}`} {...module} />
 
 					case 'tableOfContents': {
 						const maxHeadingDepth = stegaClean(module.maxHeadingDepth) ?? 6
@@ -51,7 +52,6 @@ export default function ({
 
 						return (
 							<TableOfContents
-								className="max-md:not-open:mb-0"
 								summary={module.summary}
 								headings={filtered ?? null}
 								key={`${module._key}-${i}`}
@@ -66,3 +66,30 @@ export default function ({
 		</aside>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		flexShrink: 0,
+		display: 'flex',
+		flexDirection: 'column',
+		gap: spacing.lh,
+		width: {
+			default: null,
+			[mq.md]: '24ch',
+		},
+		position: {
+			default: null,
+			[mq.md]: 'sticky',
+		},
+		top: {
+			default: null,
+			[mq.md]: 'calc(var(--header-height) + var(--offset, 0px))',
+		},
+	},
+	right: {
+		order: {
+			default: null,
+			[mq.md]: 999,
+		},
+	},
+})

@@ -1,7 +1,8 @@
+import * as stylex from '@stylexjs/stylex'
 import type { ComponentProps } from 'react'
-import { cn } from '@/lib/utils'
 import { Module } from '@/modules'
 import type { Breadcrumbs, Page } from '@/sanity/types'
+import { shared } from '../../styles/shared'
 import SanityLink, { type SanityLinkType } from '@/ui/sanity-link'
 
 export default function ({
@@ -13,11 +14,15 @@ export default function ({
 	return (
 		<Module
 			as="nav"
-			className={cn('section py-4 text-sm', structuredDataOnly && 'sr-only')}
+			{...stylex.props(
+				shared.section,
+				styles.root,
+				structuredDataOnly && shared.srOnly,
+			)}
 			{...props}
 		>
 			<ol
-				className="flex items-center gap-x-2 gap-y-1 break-all"
+				{...stylex.props(styles.list)}
 				itemScope
 				itemType="https://schema.org/BreadcrumbList"
 			>
@@ -52,9 +57,11 @@ function Crumb({
 		</>
 	)
 
+	const linkSx = stylex.props(shared.link)
+
 	return (
 		<li
-			className='line-clamp-1 not-first:before:mr-2 not-first:before:content-["/"] first:shrink-0'
+			{...stylex.props(styles.crumb)}
 			itemProp="itemListElement"
 			itemScope
 			itemType="https://schema.org/ListItem"
@@ -62,7 +69,7 @@ function Crumb({
 			{link ? (
 				<SanityLink
 					link={link as SanityLinkType}
-					className="link"
+					{...linkSx}
 					itemProp="item"
 				>
 					{Content}
@@ -73,3 +80,30 @@ function Crumb({
 		</li>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		paddingBlock: '1rem',
+		fontSize: '0.875rem',
+	},
+	list: {
+		display: 'flex',
+		alignItems: 'center',
+		columnGap: '0.5rem',
+		rowGap: '0.25rem',
+		overflowWrap: 'anywhere',
+	},
+	crumb: {
+		display: '-webkit-box',
+		WebkitBoxOrient: 'vertical',
+		WebkitLineClamp: 1,
+		overflow: 'hidden',
+		':first-child': {
+			flexShrink: 0,
+		},
+		':not(:first-child)::before': {
+			content: '"/"',
+			marginRight: '0.5rem',
+		},
+	},
+})

@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import { groq, PortableText } from 'next-sanity'
 import { ROUTES } from '@/lib/env'
 import { Module } from '@/modules'
@@ -8,6 +9,9 @@ import type {
 	BlogPost,
 	BlogPostList,
 } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import PostPreview from '@/ui/blog/post-preview'
 import CTAList from '@/ui/cta-list'
 
@@ -21,29 +25,42 @@ export default async function ({
 	...props
 }: BlogPostList & { _key: string } & DynamicFetchOptions) {
 	const posts = await getPosts({ limit, perspective, stega })
+	const introSx = stylex.props(shared.prose, styles.intro)
+	const listSx = stylex.props(styles.list)
 
 	return (
-		<Module _key={_key} className="section space-y-8" {...props}>
+		<Module {...stylex.props(shared.section, styles.root)} _key={_key} {...props}>
 			{intro && (
-				<header className="prose text-center">
+				<header
+					{...introSx}
+					className={[introSx.className, 'prose'].filter(Boolean).join(' ')}
+				>
 					<PortableText value={intro} />
 				</header>
 			)}
 
 			<ul
-				className="carousel carousel-scroll-buttons carousel-scroll-marker max-md:full-bleed gap-lh items-stretch pb-2 max-md:px-4 md:mask-r-from-[calc(100%-2rem)] md:pr-4"
+				{...listSx}
+				className={[
+					listSx.className,
+					'carousel',
+					'carousel-scroll-buttons',
+					'carousel-scroll-marker',
+				]
+					.filter(Boolean)
+					.join(' ')}
 				data-anchor-name={`--blog-post-list-${_key}`}
 			>
 				{posts?.map((post: any) => (
 					<PostPreview
-						className="md:snap-start"
+						className={stylex.props(styles.snapStart).className}
 						post={post as unknown as BlogPost}
 						key={post._id}
 					/>
 				))}
 			</ul>
 
-			<CTAList ctas={ctas} className="justify-center max-sm:*:w-full" />
+			<CTAList ctas={ctas} xstyle={styles.ctas} className={ctaFullWidthClass} />
 		</Module>
 	)
 }
@@ -70,3 +87,49 @@ const BLOG_POST_LIST_QUERY = groq`
 		'slug': $blogDir + metadata.slug.current,
 	}
 `
+
+/** StyleX cannot target arbitrary children (`*:w-full`); keep a thin CSS class. */
+const ctaFullWidthClass = 'cta-list-full-sm'
+
+const styles = stylex.create({
+	root: {
+		display: 'grid',
+		rowGap: '2rem',
+	},
+	intro: {
+		textAlign: 'center',
+	},
+	list: {
+		alignItems: 'stretch',
+		gap: spacing.lh,
+		paddingBottom: '0.5rem',
+		paddingLeft: {
+			default: '1rem',
+			[mq.md]: 0,
+		},
+		paddingRight: '1rem',
+		width: {
+			default: '100vw',
+			[mq.md]: 'auto',
+		},
+		marginInline: {
+			default: 'calc(50% - 50vw)',
+			[mq.md]: 0,
+		},
+		listStyle: 'none',
+		maskImage: {
+			default: null,
+			[mq.md]:
+				'linear-gradient(to right, #000 calc(100% - 2rem), transparent)',
+		},
+	},
+	snapStart: {
+		scrollSnapAlign: {
+			default: null,
+			[mq.md]: 'start',
+		},
+	},
+	ctas: {
+		justifyContent: 'center',
+	},
+})

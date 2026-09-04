@@ -1,31 +1,30 @@
-@import 'tailwindcss';
+/**
+ * Global CSS leftovers that StyleX cannot express:
+ * document-level rules, descendant `.prose` styles, cutting-edge pseudos,
+ * and complex animation selectors.
+ *
+ * Atomic component styles live in StyleX (`stylex.create` / `stylex.props`).
+ */
 
-@theme {
-	--font-sans: 'Geist', sans-serif;
-	--font-mono: 'Geist Mono', monospace;
-
-	--color-background: #fff;
-	--color-foreground: var(--color-neutral-900);
-	--color-stroke: var(--color-neutral-200);
-
-	--color-primary: LinkText;
-
-	--spacing-lh: 1lh;
-	--spacing-ch: 1ch;
-}
-
-@custom-variant hover (&:hover);
-
-@custom-variant header-open (body:has(#header-open:checked) &);
-@custom-variant header-not-open (body:has(#header-open:not(:checked)) &);
-
-@custom-variant headings (& :is(h1, h2, h3, h4, h5, h6));
+@stylex;
 
 @layer base {
 	@supports (interpolate-size: allow-keywords) {
 		:root {
 			interpolate-size: allow-keywords;
 		}
+	}
+
+	:root {
+		--color-background: #fff;
+		--color-foreground: #171717;
+		--color-stroke: #e5e5e5;
+		--color-primary: LinkText;
+		--color-amber-400: #fbbf24;
+		--font-sans: 'Geist', sans-serif;
+		--font-mono: 'Geist Mono', monospace;
+		--default-transition-duration: 150ms;
+		--default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	:target {
@@ -36,18 +35,28 @@
 		}
 	}
 
-	@keyframes anchored-heading {
+	/* Fine pointer: show heading # anchors only while the heading is hovered */
+	@media (pointer: fine) {
+		:is(h2, h3, h4, h5, h6):not(:hover) > a[data-heading-anchor] {
+			visibility: hidden;
+		}
+	}
 
+	@keyframes anchored-heading {
 		0%,
 		50% {
-			background-color: color-mix(in oklab,
-					var(--color-amber-400) 50%,
-					transparent);
+			background-color: color-mix(
+				in oklab,
+				var(--color-amber-400) 50%,
+				transparent
+			);
 		}
 	}
 
 	:focus-visible {
-		@apply focus-ring;
+		outline: 2px dashed var(--color-primary);
+		outline-offset: 2px;
+		z-index: 1;
 	}
 
 	* {
@@ -60,7 +69,8 @@
 
 	html {
 		scroll-behavior: smooth;
-		@apply accent-primary caret-primary;
+		accent-color: var(--color-primary);
+		caret-color: var(--color-primary);
 	}
 
 	body {
@@ -75,7 +85,8 @@
 		display: grid;
 		grid-template-rows: auto 0fr;
 		align-content: start;
-		transition: grid-template-rows var(--details-duration) var(--default-transition-timing-function);
+		transition: grid-template-rows var(--details-duration)
+			var(--default-transition-timing-function);
 
 		&::details-content {
 			content-visibility: visible;
@@ -83,11 +94,11 @@
 			min-block-size: 0;
 		}
 
-		>:not(summary) {
+		> :not(summary) {
 			transition: visibility var(--details-duration);
 		}
 
-		&:not(:is([open], :open))>:not(summary) {
+		&:not(:is([open], :open)) > :not(summary) {
 			visibility: hidden;
 		}
 
@@ -97,10 +108,9 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-
 		details,
 		details::details-content,
-		details>:not(summary) {
+		details > :not(summary) {
 			transition-duration: 0s;
 		}
 	}
@@ -119,148 +129,73 @@
 	}
 }
 
-/* typography */
-
-@utility h-base {
-	@apply font-bold;
-}
-
-@utility h0 {
-	@apply h-base text-6xl leading-[1.1];
-}
-
-@utility h1 {
-	@apply h-base text-4xl;
-}
-
-@utility h2 {
-	@apply h-base text-3xl;
-}
-
-@utility h3 {
-	@apply h-base text-2xl;
-}
-
-@utility h4 {
-	@apply h-base text-xl;
-}
-
-@utility h5 {
-	@apply h-base text-lg;
-}
-
-@utility h6 {
-	@apply h-base text-base;
-}
-
-@utility technical {
-	@apply font-mono tracking-widest uppercase;
-}
-
-/* ctas, links */
-
-@utility action-base {
-	cursor: pointer;
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	gap: 0.5em;
-	padding: 0.25em 0.75em;
-	@apply active:scale-98 transition-all;
-}
-
-@utility action {
-	@apply action-base bg-primary text-background;
-}
-
-@utility action-outline {
-	@apply action-base bg-background border-stroke text-foreground border hover:border-current;
-}
-
-@utility ghost {
-	@apply action-base bg-current/2 text-inherit hover:bg-current/5;
-}
-
-@utility link {
-	@apply text-primary cursor-pointer underline hover:decoration-2;
-}
-
-@utility input {
-	padding: 0.25em 0.5em;
-	@apply bg-background border-foreground/10 focus-within:border-foreground/30 border leading-normal;
-
-	&:focus {
-		@apply outline-none ring-3 ring-primary/20 border-primary;
-	}
-}
-
-@utility focus-ring {
-	@apply outline-2 outline-dashed outline-offset-2 outline-primary z-1;
-}
-
-@utility skip-link {
-	@apply action-base bg-background text-foreground sr-only;
-
-	&:focus {
-		@apply not-sr-only fixed top-4 left-4 focus-ring z-100;
-	}
-}
-
-/* components */
-
-@utility section {
-	@apply mx-auto w-full max-w-7xl px-4 py-12 md:px-8;
-}
-
-@utility prose {
-	@apply space-y-4 leading-relaxed;
-
+/* Portable Text / CMS HTML descendants — StyleX cannot target unmarked children */
+.prose {
 	h1 {
-		@apply h1;
+		font-weight: 700;
+		font-size: 2.25rem;
+		line-height: 1.25;
 	}
 
 	h2 {
-		@apply h2;
+		font-weight: 700;
+		font-size: 1.875rem;
+		line-height: 1.3;
 	}
 
 	h3 {
-		@apply h3;
+		font-weight: 700;
+		font-size: 1.5rem;
+		line-height: 1.35;
 	}
 
 	h4 {
-		@apply h4;
+		font-weight: 700;
+		font-size: 1.25rem;
+		line-height: 1.4;
 	}
 
 	h5 {
-		@apply h5;
+		font-weight: 700;
+		font-size: 1.125rem;
+		line-height: 1.45;
 	}
 
 	h6 {
-		@apply h6;
+		font-weight: 700;
+		font-size: 1rem;
+		line-height: 1.5;
 	}
 
 	:is(ul, ol) {
 		list-style: revert;
 		padding-left: 1.5em;
 
-		&>li>ol {
+		& > li > ol {
 			list-style: lower-alpha;
 		}
 	}
 
 	a:not([class]) {
-		@apply link;
+		color: var(--color-primary);
+		cursor: pointer;
+		text-decoration: underline;
+
+		&:hover {
+			text-decoration-thickness: 2px;
+		}
 	}
 
 	blockquote {
-		@apply border-stroke border-l-4 pl-4;
+		border-left: 4px solid var(--color-stroke);
+		padding-left: 1rem;
 	}
 
-	:not(pre)>code {
+	:not(pre) > code {
 		padding-inline: 0.25em;
 		font-size: 0.875em;
-		@apply bg-foreground/5 rounded-sm;
+		background-color: color-mix(in oklab, var(--color-foreground) 5%, transparent);
+		border-radius: 0.125rem;
 	}
 
 	pre {
@@ -274,34 +209,53 @@
 		overflow-x: auto;
 		line-height: 1.3;
 
-		@apply max-md:full-bleed;
+		@media (max-width: 47.999rem) {
+			width: 100vw;
+			margin-inline: calc(50% - 50vw);
+		}
 
 		:is(th, td) {
 			padding: 0.5lh 1em;
 		}
 
 		tbody tr:nth-child(odd) {
-			@apply bg-foreground/5;
+			background-color: color-mix(
+				in oklab,
+				var(--color-foreground) 5%,
+				transparent
+			);
 		}
 	}
 }
 
-@utility carousel {
+/* Carousel — scroll-button / scroll-marker pseudos */
+.carousel {
 	--anchor-name: attr(data-anchor-name type(<custom-ident>), --carousel);
 	anchor-name: var(--anchor-name);
 	display: grid;
 	grid-auto-flow: column;
-	grid-auto-columns: min(var(--container-xs), 80vw);
+	grid-auto-columns: min(20rem, 80vw);
 	overflow-x: auto;
 	scroll-behavior: smooth;
 	scroll-snap-type: x mandatory;
 
-	@apply *:md:snap-start *:snap-center;
+	& > * {
+		scroll-snap-align: center;
+
+		@media (min-width: 48rem) {
+			scroll-snap-align: start;
+		}
+	}
 }
 
-@utility carousel-scroll-buttons {
+.carousel-scroll-buttons {
 	@supports (position-anchor: var(--anchor-name)) {
-		@apply no-scrollbar;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
 
 		&::scroll-button(*) {
 			cursor: pointer;
@@ -318,18 +272,20 @@
 		&::scroll-button(left) {
 			content: '' / 'Scroll left';
 			position-area: center start;
-			mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23fff' d='M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208 208-93.13 208-208S370.87 48 256 48zm62.63 304L296 374.63 177.37 256 296 137.37 318.63 160l-96 96z'/%3E%3C/svg%3E") center / cover;
+			mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23fff' d='M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208 208-93.13 208-208S370.87 48 256 48zm62.63 304L296 374.63 177.37 256 296 137.37 318.63 160l-96 96z'/%3E%3C/svg%3E")
+				center / cover;
 		}
 
 		&::scroll-button(right) {
 			content: '' / 'Scroll right';
 			position-area: center end;
-			mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23fff' d='M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208 208-93.13 208-208S370.87 48 256 48zm-40 326.63L193.37 352l96-96-96-96L216 137.37 334.63 256z'/%3E%3C/svg%3E") center / cover;
+			mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23fff' d='M256 48C141.13 48 48 141.13 48 256s93.13 208 208 208 208-93.13 208-208S370.87 48 256 48zm-40 326.63L193.37 352l96-96-96-96L216 137.37 334.63 256z'/%3E%3C/svg%3E")
+				center / cover;
 		}
 	}
 }
 
-@utility carousel-scroll-marker {
+.carousel-scroll-marker {
 	--size: 12px;
 	scroll-marker-group: after;
 
@@ -343,36 +299,48 @@
 		gap: 0.5ch;
 	}
 
-	&>* {
+	& > * {
 		&::scroll-marker {
 			content: '';
-			@apply bg-foreground/25 block size-1 rounded-full;
+			background-color: color-mix(
+				in oklab,
+				var(--color-foreground) 25%,
+				transparent
+			);
+			display: block;
+			width: 0.25rem;
+			height: 0.25rem;
+			border-radius: 9999px;
 		}
 
 		&::scroll-marker:target-current {
-			@apply bg-foreground w-[2ch] opacity-100;
+			background-color: var(--color-foreground);
+			width: 2ch;
+			opacity: 1;
 		}
 	}
 }
 
-@utility accordion {
-	&>summary {
+.accordion {
+	& > summary {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.5em;
 
 		svg {
-			@apply shrink-0 transition-[rotate];
+			flex-shrink: 0;
+			transition: rotate var(--default-transition-duration)
+				var(--default-transition-timing-function);
 		}
 	}
 
-	&:open>summary svg {
-		rotate: .5turn;
+	&:open > summary svg {
+		rotate: 0.5turn;
 	}
 }
 
-@utility dropdown {
+.dropdown {
 	summary {
 		anchor-name: var(--anchor-name);
 	}
@@ -383,84 +351,41 @@
 		position-try-fallbacks: end span-start, flip-block;
 		position-try: end span-start, flip-block;
 
-		transition: var(--default-transition-duration) var(--default-transition-timing-function);
+		transition: var(--default-transition-duration)
+			var(--default-transition-timing-function);
 		transition-property: opacity, translate, scale, visibility;
 
-		@apply fixed z-1 min-w-max bg-background shadow-lg origin-top;
+		position: fixed;
+		z-index: 1;
+		min-width: max-content;
+		background-color: var(--color-background);
+		box-shadow:
+			0 10px 15px -3px rgb(0 0 0 / 0.1),
+			0 4px 6px -4px rgb(0 0 0 / 0.1);
+		transform-origin: top;
 	}
 
-	&:not(:open)>:not(summary) {
-		@apply -translate-y-1 scale-95 opacity-0;
-	}
-}
-
-@utility skeleton {
-	background-size: 200% 100%;
-	background-image: linear-gradient(to right,
-			color-mix(in oklab, var(--color-foreground) 10%, transparent),
-			color-mix(in oklab, var(--color-foreground) 5%, transparent),
-			color-mix(in oklab, var(--color-foreground) 10%, transparent));
-	animation: skeleton 1.2s linear infinite;
-
-	@apply block h-lh;
-}
-
-@keyframes skeleton {
-	to {
-		background-position: -200% 0;
+	&:not(:open) > :not(summary) {
+		translate: 0 -0.25rem;
+		scale: 0.95;
+		opacity: 0;
 	}
 }
 
-/* utilities */
-
-@utility full-bleed {
-	width: 100vw;
-	margin-inline: calc(50% - 50vw);
-}
-
-@utility no-scrollbar {
-	-webkit-overflow-scrolling: touch;
-	scrollbar-width: none;
-
-	&::-webkit-scrollbar {
-		display: none;
-	}
-}
-
-@utility sticky-below-header {
-	position: sticky;
-	top: calc(var(--header-height) + var(--offset, 0px));
-}
-
-/* anims */
-
-@utility anim-fade {
-	transition: var(--default-transition-duration) var(--default-transition-timing-function);
-	transition-property: opacity, translate, scale;
-	@apply starting:opacity-0;
-}
-
-@utility anim-fade-to-l {
-	@apply anim-fade starting:translate-x-4;
-}
-
-@utility anim-fade-to-r {
-	@apply anim-fade starting:-translate-x-4;
-}
-
-@utility anim-fade-to-t {
-	@apply anim-fade starting:translate-y-4;
-}
-
-@utility anim-fade-to-b {
-	@apply anim-fade starting:-translate-y-4;
-}
-
-@utility anim-toggle {
-	transition: var(--default-transition-duration) var(--default-transition-timing-function);
+.anim-toggle {
+	transition: var(--default-transition-duration)
+		var(--default-transition-timing-function);
 	transition-property: opacity, translate, scale, visibility;
 
-	:where(details:not(:open))>& {
-		@apply -translate-y-4 opacity-0;
+	:where(details:not(:open)) > & {
+		translate: 0 -1rem;
+		opacity: 0;
+	}
+}
+
+/* CTAList — StyleX cannot target arbitrary children */
+.cta-list-full-sm > * {
+	@media (max-width: 39.999rem) {
+		width: 100%;
 	}
 }

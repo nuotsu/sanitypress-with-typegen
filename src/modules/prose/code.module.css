@@ -14,6 +14,10 @@
 	}
 }
 
+.code > :global(*) {
+	padding: 1rem;
+}
+
 .code :global(.highlight) {
 	position: relative;
 
@@ -32,4 +36,8 @@
 				var(--highlight-color) 20%,
 				transparent);
 	}
+}
+
+.copyBtn:global(.copied) {
+	opacity: 1;
 }

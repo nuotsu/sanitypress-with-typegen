@@ -1,19 +1,20 @@
 'use client'
 
+import * as stylex from '@stylexjs/stylex'
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
-import { cn } from '@/lib/utils'
 import css from './image-gallery.module.css'
 
 export default function Track({
 	reverse,
 	duration,
-	className,
+	xstyle,
 	children,
 	...props
 }: {
 	reverse?: boolean
 	duration: number
-} & ComponentProps<'div'>) {
+	xstyle?: stylex.StyleXStyles
+} & Omit<ComponentProps<'div'>, 'className'>) {
 	const ref = useRef<HTMLDivElement>(null)
 	const [inView, setInView] = useState(false)
 
@@ -29,17 +30,26 @@ export default function Track({
 		return () => observer.disconnect()
 	}, [])
 
+	const sx = stylex.props(xstyle)
+
 	return (
 		<div
 			ref={ref}
-			className={cn(
+			{...sx}
+			{...props}
+			className={[
 				css.track,
 				reverse && css.reverse,
 				!inView && css.paused,
-				className,
-			)}
-			style={{ '--duration': `${duration}s` }}
-			{...props}
+				sx.className,
+			]
+				.filter(Boolean)
+				.join(' ')}
+			style={{
+				...sx.style,
+				...props.style,
+				['--duration' as string]: `${duration}s`,
+			}}
 		>
 			{children}
 		</div>

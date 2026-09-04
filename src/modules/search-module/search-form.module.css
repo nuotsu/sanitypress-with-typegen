@@ -1,0 +1,8 @@
+/* Interactive hide/show that StyleX cannot express (group :hover / :has). */
+.root:not(:hover):not(:has(:is(:focus, :focus-within, .results:hover))) .output {
+	display: none;
+}
+
+.output {
+	display: block;
+}

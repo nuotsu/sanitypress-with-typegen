@@ -1,23 +1,62 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText, type PortableTextTypeComponentProps } from 'next-sanity'
+import { colors } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import Img from '@/ui/img'
 
 export default function ({
 	value: { figcaption, ...image },
 }: PortableTextTypeComponentProps<any>) {
 	return (
-		<figure className="max-md:full-bleed my-6 space-y-2 text-center first:mt-0 md:col-[bleed]!">
+		<figure {...stylex.props(styles.figure)}>
 			<Img
-				className="mx-auto"
+				{...stylex.props(styles.image)}
 				image={image}
 				width={1000}
 				alt={image.alt ?? ''}
 			/>
 
 			{figcaption && (
-				<figcaption className="text-foreground/50 italic max-md:px-4">
+				<figcaption {...stylex.props(styles.caption)}>
 					<PortableText value={figcaption} />
 				</figcaption>
 			)}
 		</figure>
 	)
 }
+
+const styles = stylex.create({
+	figure: {
+		marginBlock: '1.5rem',
+		display: 'flex',
+		flexDirection: 'column',
+		rowGap: '0.5rem',
+		textAlign: 'center',
+		':first-child': {
+			marginTop: 0,
+		},
+		width: {
+			default: '100vw',
+			[mq.md]: '100%',
+		},
+		marginInline: {
+			default: 'calc(50% - 50vw)',
+			[mq.md]: null,
+		},
+		gridColumn: {
+			default: null,
+			[mq.md]: 'bleed',
+		},
+	},
+	image: {
+		marginInline: 'auto',
+	},
+	caption: {
+		color: colors.foreground50,
+		fontStyle: 'italic',
+		paddingInline: {
+			default: '1rem',
+			[mq.md]: null,
+		},
+	},
+})

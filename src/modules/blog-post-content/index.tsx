@@ -1,5 +1,5 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
-import { cn } from '@/lib/utils'
 import { Module } from '@/modules'
 import AccordionList from '@/modules/accordion-list'
 import CustomHTML from '@/modules/custom-html'
@@ -14,6 +14,9 @@ import type {
 	Cta,
 	Person,
 } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors, spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import Byline from '@/ui/blog/byline'
 import Categories from '@/ui/blog/categories'
 import Date from '@/ui/blog/date'
@@ -30,26 +33,31 @@ export default function ({
 }: { post: BLOG_POST_QUERY_RESULT } & BlogPostContent) {
 	if (!post) return null
 
+	const proseSx = stylex.props(shared.prose, styles.body)
+	const bgSx = stylex.props(styles.bgImage)
+	const contentSx = stylex.props(shared.section, styles.content)
+
 	return (
 		<>
 			<Module as="article" {...props}>
-				<header className="section relative text-center">
+				<header {...stylex.props(shared.section, styles.header)}>
 					<Img
 						image={post.metadata?.image}
 						imageOptions={{ blur: 30 }}
 						width={1000}
-						className="absolute inset-0 size-full object-cover opacity-10 delay-1000 duration-2000 starting:opacity-0"
+						{...bgSx}
+						style={bgSx.style}
 						alt={post.metadata?.title ?? ''}
 						draggable={false}
 						loading="eager"
 					/>
 
-					<div className="relative mx-auto max-w-5xl space-y-4">
-						<h1 className="h1 text-balance">
+					<div {...stylex.props(styles.headerInner)}>
+						<h1 {...stylex.props(shared.h1, styles.title)}>
 							{post.title || post.metadata?.title}
 						</h1>
 
-						<div className="gap-x-lh gap-y-ch flex flex-wrap items-center justify-center">
+						<div {...stylex.props(styles.meta)}>
 							<Byline author={post.author as unknown as Person} />
 							<Categories
 								categories={post.categories as BlogCategory[]}
@@ -61,14 +69,20 @@ export default function ({
 					</div>
 				</header>
 
-				<section className="post-content section gap-lh flex max-md:flex-col md:items-start">
-					<Sidebar
-						{...sidebar}
-						headings={post.headings}
-						className="max-md:p-ch max-md:bg-current/5"
-					/>
+				<section
+					{...contentSx}
+					className={[contentSx.className, 'post-content']
+						.filter(Boolean)
+						.join(' ')}
+				>
+					<Sidebar {...sidebar} headings={post.headings} xstyle={styles.sidebar} />
 
-					<div className={cn(css.body, 'prose mx-auto grid w-full max-w-4xl')}>
+					<div
+						{...proseSx}
+						className={[proseSx.className, css.body, 'prose']
+							.filter(Boolean)
+							.join(' ')}
+					>
 						<PortableText
 							value={post.content ?? []}
 							components={{
@@ -85,7 +99,7 @@ export default function ({
 									'accordion-list': ({ value }) => (
 										<AccordionList
 											{...value}
-											className="p-0 [&_header]:text-left"
+											{...stylex.props(styles.accordion)}
 										/>
 									),
 									ctas: ({ value }) => (
@@ -94,7 +108,9 @@ export default function ({
 									code: Code,
 									table: Table,
 									'custom-html': ({ value }) => (
-										<CustomHTML {...value} className="my-6" />
+										<div {...stylex.props(styles.customHtml)}>
+											<CustomHTML {...value} />
+										</div>
 									),
 								},
 							}}
@@ -107,3 +123,73 @@ export default function ({
 		</>
 	)
 }
+
+const styles = stylex.create({
+	header: {
+		position: 'relative',
+		textAlign: 'center',
+	},
+	bgImage: {
+		position: 'absolute',
+		inset: 0,
+		width: '100%',
+		height: '100%',
+		objectFit: 'cover',
+		opacity: 0.1,
+	},
+	headerInner: {
+		position: 'relative',
+		marginInline: 'auto',
+		maxWidth: '64rem',
+		display: 'flex',
+		flexDirection: 'column',
+		rowGap: '1rem',
+	},
+	title: {
+		textWrap: 'balance',
+	},
+	meta: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		alignItems: 'center',
+		justifyContent: 'center',
+		columnGap: spacing.lh,
+		rowGap: spacing.ch,
+	},
+	content: {
+		display: 'flex',
+		gap: spacing.lh,
+		flexDirection: {
+			default: 'column',
+			[mq.md]: 'row',
+		},
+		alignItems: {
+			default: null,
+			[mq.md]: 'flex-start',
+		},
+	},
+	sidebar: {
+		padding: {
+			default: spacing.ch,
+			[mq.md]: null,
+		},
+		backgroundColor: {
+			default: colors.current05,
+			[mq.md]: null,
+		},
+	},
+	body: {
+		marginInline: 'auto',
+		display: 'grid',
+		width: '100%',
+		maxWidth: '56rem',
+	},
+	accordion: {
+		padding: 0,
+		// header text-align left — AccordionList still Tailwind; see issues
+		textAlign: 'left',
+	},
+	customHtml: {
+		marginBlock: '1.5rem',
+	},
+})

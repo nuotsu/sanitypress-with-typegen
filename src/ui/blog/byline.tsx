@@ -1,5 +1,7 @@
-import { cn } from '@/lib/utils'
+import * as stylex from '@stylexjs/stylex'
 import type { Person } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { spacing } from '../../styles/tokens.stylex'
 import Img from '@/ui/img'
 
 export default function ({
@@ -8,11 +10,16 @@ export default function ({
 }: { author?: Person } & React.ComponentProps<'div'>) {
 	if (!author?.name) return null
 
+	const root = stylex.props(styles.root)
+
 	return (
-		<div className={cn('inline-flex items-center gap-2', className)}>
-			<figure className="size-lh aspect-square shrink-0 overflow-hidden rounded-full">
+		<div
+			{...root}
+			className={[root.className, className].filter(Boolean).join(' ')}
+		>
+			<figure {...stylex.props(styles.figure)}>
 				<Img
-					className="aspect-square object-cover"
+					{...stylex.props(styles.image)}
 					image={author.image}
 					width={48}
 					alt={author.name ?? ''}
@@ -20,9 +27,29 @@ export default function ({
 			</figure>
 
 			<div>
-				<span className="sr-only">By </span>
+				<span {...stylex.props(shared.srOnly)}>By </span>
 				{author.name}
 			</div>
 		</div>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		display: 'inline-flex',
+		alignItems: 'center',
+		gap: '0.5rem',
+	},
+	figure: {
+		width: spacing.lh,
+		height: spacing.lh,
+		aspectRatio: '1 / 1',
+		flexShrink: 0,
+		overflow: 'hidden',
+		borderRadius: '9999px',
+	},
+	image: {
+		aspectRatio: '1 / 1',
+		objectFit: 'cover',
+	},
+})

@@ -2,7 +2,9 @@
 
 import { stegaClean } from 'next-sanity'
 import { useEffect, useRef, useState, type ComponentProps } from 'react'
-import { cn, slug } from '@/lib/utils'
+import * as stylex from '@stylexjs/stylex'
+import { slug } from '@/lib/utils'
+import { colors } from '../../styles/tokens.stylex'
 import css from './toc.module.css'
 
 export default function ({
@@ -59,20 +61,40 @@ export default function ({
 		return () => observer.disconnect()
 	}, [heading, thresholdHeight])
 
+	const level = stegaClean(heading.style)
+
 	return (
 		<li ref={ref} {...props}>
 			<a
 				href={`#${slug(heading.text, { removeLeadingNumberAndHyphen: true })}`}
-				className={cn('text-foreground block py-1 hover:underline', {
-					'pl-ch': stegaClean(heading.style) === 'h2',
-					'pl-[2ch]': stegaClean(heading.style) === 'h3',
-					'pl-[3ch]': stegaClean(heading.style) === 'h4',
-					'pl-[4ch]': stegaClean(heading.style) === 'h5',
-					'pl-[5ch]': stegaClean(heading.style) === 'h6',
-				})}
+				{...stylex.props(
+					styles.link,
+					level === 'h2' && styles.indentH2,
+					level === 'h3' && styles.indentH3,
+					level === 'h4' && styles.indentH4,
+					level === 'h5' && styles.indentH5,
+					level === 'h6' && styles.indentH6,
+				)}
 			>
 				{heading.text}
 			</a>
 		</li>
 	)
 }
+
+const styles = stylex.create({
+	link: {
+		color: colors.foreground,
+		display: 'block',
+		paddingBlock: '0.25rem',
+		textDecorationLine: {
+			default: 'none',
+			':hover': 'underline',
+		},
+	},
+	indentH2: { paddingLeft: '1ch' },
+	indentH3: { paddingLeft: '2ch' },
+	indentH4: { paddingLeft: '3ch' },
+	indentH5: { paddingLeft: '4ch' },
+	indentH6: { paddingLeft: '5ch' },
+})

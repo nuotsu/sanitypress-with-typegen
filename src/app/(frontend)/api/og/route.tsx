@@ -1,7 +1,6 @@
 import { groq } from 'next-sanity'
 import { ImageResponse } from 'next/og'
 import { ROUTES } from '@/lib/env'
-import { cn } from '@/lib/utils'
 import {
 	getDynamicFetchOptions,
 	sanityFetch,
@@ -43,12 +42,12 @@ export async function GET(request: Request) {
 
 	return new ImageResponse(
 		<div
-			tw={cn(
+			tw={[
 				'flex h-full w-full flex-col justify-between px-24 py-16',
 				invert
 					? 'bg-neutral-900 text-neutral-100'
 					: 'bg-neutral-100 text-neutral-900',
-			)}
+			].join(' ')}
 		>
 			<hgroup tw="flex flex-col">
 				<h1 tw="text-7xl leading-[1.1] font-bold">{h1}</h1>

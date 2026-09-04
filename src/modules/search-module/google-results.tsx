@@ -1,8 +1,10 @@
 'use client'
 
+import * as stylex from '@stylexjs/stylex'
 import { useQueryState } from 'nuqs'
 import { ROUTES } from '@/lib/env'
 import type { SearchModule } from '@/sanity/types'
+import { shared } from '../../styles/shared'
 
 export default function ({ scope }: { scope: SearchModule['scope'] }) {
 	const [query] = useQueryState('query')
@@ -14,10 +16,16 @@ export default function ({ scope }: { scope: SearchModule['scope'] }) {
 	].join('')
 
 	return (
-		<p className="text-center">
-			<a className="link" href={href} target="_blank">
+		<p {...stylex.props(styles.root)}>
+			<a {...stylex.props(shared.link)} href={href} target="_blank">
 				Search on Google
 			</a>
 		</p>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		textAlign: 'center',
+	},
+})

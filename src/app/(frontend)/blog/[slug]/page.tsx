@@ -21,6 +21,7 @@ import {
 	MODULES_QUERY,
 } from '@/sanity/lib/queries'
 import type { BLOG_POST_QUERY_RESULT } from '@/sanity/types'
+import { shared } from '../../../../styles/shared'
 import Loading from '@/ui/loading'
 
 type Props = PageProps<'/blog/[slug]'>
@@ -31,7 +32,7 @@ export default async function ({ params }: Props) {
 
 	if (showDrafts) {
 		return (
-			<Suspense fallback={<Loading className="section" />}>
+			<Suspense fallback={<Loading xstyle={shared.section} />}>
 				<DynamicPost params={params} />
 			</Suspense>
 		)

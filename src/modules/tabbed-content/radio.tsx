@@ -1,6 +1,8 @@
 'use client'
 
+import * as stylex from '@stylexjs/stylex'
 import { useEffect, useRef } from 'react'
+import { shared } from '../../styles/shared'
 import { useTabbedContent } from './store'
 
 export default function ({
@@ -22,8 +24,22 @@ export default function ({
 			ref={ref}
 			type="radio"
 			onChange={(e) => setActiveTab(Number(e.currentTarget.value))}
-			className="sr-only"
+			{...stylex.props(shared.srOnly)}
 			{...props}
 		/>
+	)
+}
+
+export function Panel({
+	index,
+	children,
+	...props
+}: { index: number } & React.ComponentProps<'article'>) {
+	const { activeTab } = useTabbedContent()
+
+	return (
+		<article hidden={activeTab !== index ? true : undefined} {...props}>
+			{children}
+		</article>
 	)
 }

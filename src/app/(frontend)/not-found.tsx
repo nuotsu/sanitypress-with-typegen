@@ -12,6 +12,7 @@ import {
 } from '@/sanity/lib/live'
 import { MODULES_QUERY } from '@/sanity/lib/queries'
 import type { NOT_FOUND_QUERY_RESULT } from '@/sanity/types'
+import { shared } from '../../styles/shared'
 import Loading from '@/ui/loading'
 
 export default async function NotFound() {
@@ -20,7 +21,7 @@ export default async function NotFound() {
 
 	if (showDrafts) {
 		return (
-			<Suspense fallback={<Loading className="section" />}>
+			<Suspense fallback={<Loading xstyle={shared.section} />}>
 				<DynamicNotFound />
 			</Suspense>
 		)

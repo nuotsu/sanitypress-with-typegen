@@ -1,7 +1,8 @@
 import Link from 'next/link'
+import * as stylex from '@stylexjs/stylex'
 import { ROUTES } from '@/lib/env'
-import { cn } from '@/lib/utils'
 import type { BlogCategory } from '@/sanity/types'
+import { shared } from '../../styles/shared'
 
 export default function ({
 	categories,
@@ -13,17 +14,22 @@ export default function ({
 } & React.ComponentProps<'ul'>) {
 	if (!categories) return null
 
+	const root = stylex.props(styles.root)
+
 	return (
-		<ul className={cn('flex flex-wrap gap-x-[.5ch] p-0', className)}>
+		<ul
+			{...root}
+			className={[root.className, className].filter(Boolean).join(' ')}
+		>
 			{categories.map((category, key) => (
-				<li className="shrink-0" key={key}>
+				<li {...stylex.props(styles.item)} key={key}>
 					{linked ? (
 						<Link
 							href={{
 								pathname: `/${ROUTES.blog}`,
 								query: { category: category.slug?.current },
 							}}
-							className="link"
+							{...stylex.props(shared.link)}
 						>
 							{category.title}
 						</Link>
@@ -37,3 +43,15 @@ export default function ({
 		</ul>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		display: 'flex',
+		flexWrap: 'wrap',
+		columnGap: '0.5ch',
+		padding: 0,
+	},
+	item: {
+		flexShrink: 0,
+	},
+})

@@ -13,15 +13,18 @@
 	@media (width < 48rem) {
 		display: grid;
 		grid-template-rows: 0fr;
-		transition: grid-template-rows var(--default-transition-duration) var(--default-transition-timing-function);
+		transition: grid-template-rows var(--default-transition-duration)
+			var(--default-transition-timing-function);
 
-		>* {
+		> * {
 			overflow: clip;
 			min-block-size: 0;
 			transition:
 				visibility var(--default-transition-duration),
-				opacity var(--default-transition-duration) var(--default-transition-timing-function),
-				translate var(--default-transition-duration) var(--default-transition-timing-function);
+				opacity var(--default-transition-duration)
+					var(--default-transition-timing-function),
+				translate var(--default-transition-duration)
+					var(--default-transition-timing-function);
 			visibility: hidden;
 			opacity: 0;
 			translate: 0 -1rem;
@@ -32,11 +35,117 @@
 		@media (width < 48rem) {
 			grid-template-rows: 1fr;
 
-			>* {
+			> * {
 				visibility: visible;
 				opacity: 1;
 				translate: 0;
 			}
+		}
+	}
+}
+
+/* Solid bg + shadow when mobile menu is open */
+:global(body:has(#header-open:checked)) .wrapperOpen {
+	@media (width < 48rem) {
+		background-color: var(--color-background);
+		box-shadow:
+			0 20px 25px -5px rgb(0 0 0 / 0.1),
+			0 8px 10px -6px rgb(0 0 0 / 0.1);
+	}
+}
+
+:global(body:has(#header-open:checked)) .topOpen {
+	@media (width < 48rem) {
+		background-color: var(--color-background);
+	}
+}
+
+:global(body:has(#header-open:checked)) .menuOpen {
+	@media (width < 48rem) {
+		padding-bottom: 1rem;
+	}
+}
+
+/* Solid bg when a desktop nav details is open */
+.wrapperNavOpen {
+	@media (width >= 48rem) {
+		&:has(nav > details[open]),
+		&:has(nav > details:open) {
+			background-color: var(--color-background);
+		}
+	}
+}
+
+.ctasFull {
+	@media (width < 40rem) {
+		width: 100%;
+
+		> :global(*) {
+			width: 100%;
+		}
+	}
+}
+
+.megaItems {
+	@media (width >= 48rem) {
+		> :global(*) {
+			margin-bottom: 1lh;
+		}
+	}
+}
+
+@media (width < 48rem) {
+	:global(details[open]) > .summaryOpen,
+	:global(details:open) > .summaryOpen {
+		font-weight: 700;
+	}
+}
+
+/* Desktop-only dropdown positioning (was md:dropdown) */
+@media (width >= 48rem) {
+	.dropdown {
+		summary {
+			anchor-name: var(--anchor-name);
+		}
+
+		> :not(summary) {
+			position-anchor: var(--anchor-name);
+			position-area: end span-end;
+			position-try-fallbacks: end span-start, flip-block;
+			position-try: end span-start, flip-block;
+
+			transition: var(--default-transition-duration)
+				var(--default-transition-timing-function);
+			transition-property: opacity, translate, scale, visibility;
+
+			position: fixed;
+			z-index: 1;
+			min-width: max-content;
+			background-color: var(--color-background);
+			box-shadow:
+				0 10px 15px -3px rgb(0 0 0 / 0.1),
+				0 4px 6px -4px rgb(0 0 0 / 0.1);
+			transform-origin: top;
+		}
+
+		&:not([open]):not(:open) > :not(summary) {
+			translate: 0 -0.25rem;
+			scale: 0.95;
+			opacity: 0;
+		}
+	}
+}
+
+/* Mobile-only anim-toggle (was max-md:anim-toggle) */
+@media (width < 48rem) {
+	.animToggle {
+		transition: var(--default-transition-duration)
+			var(--default-transition-timing-function);
+		transition-property: opacity, translate, scale, visibility;
+
+		:global(:where(details:not([open], :open))) > & {
+			translate: 0 -1rem;
+			opacity: 0;
 		}
 	}
 }

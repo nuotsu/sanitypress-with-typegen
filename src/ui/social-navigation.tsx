@@ -1,3 +1,4 @@
+import * as stylex from '@stylexjs/stylex'
 import {
 	FaFacebook,
 	FaGithub,
@@ -9,6 +10,8 @@ import {
 	FaYelp,
 	FaYoutube,
 } from 'react-icons/fa6'
+import { colors, spacing } from '../styles/tokens.stylex'
+import { mq } from '../styles/breakpoints.stylex'
 import type { DynamicFetchOptions } from '@/sanity/lib/live'
 import { getSite } from '@/sanity/lib/queries'
 import SanityLink, { type SanityLinkType } from './sanity-link'
@@ -16,12 +19,22 @@ import SanityLink, { type SanityLinkType } from './sanity-link'
 export default async function ({
 	perspective,
 	stega,
+	xstyle,
+	className,
 	...props
-}: React.ComponentProps<'nav'> & DynamicFetchOptions) {
+}: Omit<React.ComponentProps<'nav'>, 'className'> & {
+	xstyle?: stylex.StyleXStyles
+	className?: string
+} & DynamicFetchOptions) {
 	const site = await getSite({ perspective, stega })
+	const sx = stylex.props(styles.nav, xstyle)
 
 	return (
-		<nav {...props}>
+		<nav
+			{...props}
+			{...sx}
+			className={[sx.className, className].filter(Boolean).join(' ')}
+		>
 			{site?.social?.items?.map((link, i) => {
 				switch (link._type) {
 					case 'link':
@@ -30,28 +43,28 @@ export default async function ({
 						return (
 							<SanityLink
 								link={link as SanityLinkType}
-								className="text-current"
+								{...stylex.props(styles.item)}
 								aria-label={link.label || url}
 								key={`${link._key}-${i}`}
 							>
 								{url?.includes('facebook.com') ? (
-									<FaFacebook />
+									<FaFacebook {...stylex.props(styles.icon)} />
 								) : url?.includes('github.com') ? (
-									<FaGithub />
+									<FaGithub {...stylex.props(styles.icon)} />
 								) : url?.includes('instagram.com') ? (
-									<FaInstagram />
+									<FaInstagram {...stylex.props(styles.icon)} />
 								) : url?.includes('linkedin.com') ? (
-									<FaLinkedinIn />
+									<FaLinkedinIn {...stylex.props(styles.icon)} />
 								) : url?.includes('tiktok.com') ? (
-									<FaTiktok />
+									<FaTiktok {...stylex.props(styles.icon)} />
 								) : url?.includes('twitter.com') || url?.includes('x.com') ? (
-									<FaXTwitter />
+									<FaXTwitter {...stylex.props(styles.icon)} />
 								) : url?.includes('yelp.com') ? (
-									<FaYelp />
+									<FaYelp {...stylex.props(styles.icon)} />
 								) : url?.includes('youtube.com') ? (
-									<FaYoutube />
+									<FaYoutube {...stylex.props(styles.icon)} />
 								) : (
-									<FaLink />
+									<FaLink {...stylex.props(styles.icon)} />
 								)}
 							</SanityLink>
 						)
@@ -63,3 +76,23 @@ export default async function ({
 		</nav>
 	)
 }
+
+const styles = stylex.create({
+	nav: {
+		display: 'flex',
+		alignItems: 'center',
+		gap: '1rem',
+		color: colors.primary,
+		justifyContent: {
+			default: 'center',
+			[mq.md]: null,
+		},
+	},
+	item: {
+		color: 'currentColor',
+	},
+	icon: {
+		width: spacing.lh,
+		height: spacing.lh,
+	},
+})

@@ -1,5 +1,8 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
 import type { Megamenu, Page } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { mq } from '../../styles/breakpoints.stylex'
 import Img from '@/ui/img'
 import SanityLink, { type SanityLinkType } from '@/ui/sanity-link'
 
@@ -10,23 +13,32 @@ export default function ({
 }: Partial<NonNullable<Megamenu['items']>[number] & { _type: 'link.card' }>) {
 	const label = link?.label || (link?.internal as unknown as Page)?.title
 
+	const figureSx = stylex.props(styles.figure)
+	const imgSx = stylex.props(styles.img)
+	const captionSx = stylex.props(styles.caption)
+	const linkSx = stylex.props(styles.link)
+	const contentSx = stylex.props(shared.prose, styles.content)
+
 	return (
-		<figure className="link-card relative break-inside-avoid md:max-w-md">
+		<figure {...figureSx}>
 			<Img
-				className="w-full max-md:hidden"
+				{...imgSx}
 				image={image}
 				width={500}
 				alt={label ?? ''}
 			/>
 
-			<figcaption className="grid gap-1">
+			<figcaption {...captionSx}>
 				<SanityLink
-					className="py-1 text-current after:absolute after:inset-0 hover:underline md:font-bold"
+					{...linkSx}
 					link={link as unknown as SanityLinkType}
 				/>
 
 				{content && (
-					<div className="prose text-sm max-md:hidden">
+					<div
+						{...contentSx}
+						className={[contentSx.className, 'prose'].filter(Boolean).join(' ')}
+					>
 						<PortableText value={content} />
 					</div>
 				)}
@@ -34,3 +46,49 @@ export default function ({
 		</figure>
 	)
 }
+
+const styles = stylex.create({
+	figure: {
+		position: 'relative',
+		breakInside: 'avoid',
+		maxWidth: {
+			default: null,
+			[mq.md]: '28rem',
+		},
+	},
+	img: {
+		width: '100%',
+		display: {
+			default: null,
+			[mq.maxMd]: 'none',
+		},
+	},
+	caption: {
+		display: 'grid',
+		gap: '0.25rem',
+	},
+	link: {
+		paddingBlock: '0.25rem',
+		color: 'currentColor',
+		fontWeight: {
+			default: null,
+			[mq.md]: 700,
+		},
+		textDecorationLine: {
+			default: 'none',
+			':hover': 'underline',
+		},
+		'::after': {
+			content: '""',
+			position: 'absolute',
+			inset: 0,
+		},
+	},
+	content: {
+		fontSize: '0.875rem',
+		display: {
+			default: 'flex',
+			[mq.maxMd]: 'none',
+		},
+	},
+})

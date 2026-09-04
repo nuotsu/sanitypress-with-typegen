@@ -1,5 +1,7 @@
+import * as stylex from '@stylexjs/stylex'
 import type { PortableTextComponentProps } from 'next-sanity'
 import { slug } from '@/lib/utils'
+import { colors, spacing } from '../../styles/tokens.stylex'
 
 type PortableTextProps = PortableTextComponentProps<{
 	_key?: string
@@ -21,13 +23,14 @@ export default function ({
 	)
 
 	return (
-		<Tag className="group" id={id}>
+		<Tag id={id}>
 			{children}
 
 			{Tag !== 'h1' && (
 				<a
 					href={`#${id}`}
-					className="text-primary ml-ch inline-block pointer-fine:not-group-hover:invisible"
+					{...stylex.props(styles.anchor)}
+					data-heading-anchor
 				>
 					#
 				</a>
@@ -35,3 +38,11 @@ export default function ({
 		</Tag>
 	)
 }
+
+const styles = stylex.create({
+	anchor: {
+		display: 'inline-block',
+		marginLeft: spacing.ch,
+		color: colors.primary,
+	},
+})

@@ -53,11 +53,13 @@ A module that runs its own independent Sanity fetch (not just what `MODULES_QUER
 **Component:** Always spread `...props` into `<Module>` (default `as="section"`). This wires up `id`, `data-module`, `hidden`, and scoped CSS for Visual Editing.
 
 ```tsx
+import * as stylex from '@stylexjs/stylex'
 import { Module } from '@/modules'
+import { shared } from '@/styles/shared'
 
 export default function ({ intro, ...props }: MyModule) {
 	return (
-		<Module className="section" {...props}>
+		<Module {...stylex.props(shared.section)} {...props}>
 			<div>...</div>
 		</Module>
 	)
@@ -82,7 +84,6 @@ See `src/modules/blog-index/index.tsx` for a worked example. Missing the registr
 
 - `getBlockText(block)` — extracts plain text from a PortableText block array (use in schema `preview.prepare`)
 - `count(arr, singular)` — formats `"3 items"` (use in schema `preview.prepare`)
-- `cn(...classes)` — `clsx` + `tailwind-merge`
 
 ### Global modules
 
@@ -117,4 +118,4 @@ src/sanity/lib/
 
 ### Styling
 
-Tailwind 4 with PostCSS. Global styles in `src/app.css`. Use `cn()` for conditional class merging.
+StyleX (`stylex.create` / `stylex.props`) compiled via `@stylexswc/nextjs-plugin` (Turbopack) + `@stylexswc/postcss-plugin`. Tokens/breakpoints live in `src/styles/*.stylex.ts` (`defineVars` / `defineConsts`) and **must be imported with relative paths** (StyleX cannot resolve `@/` aliases for theme files). Shared recipes: `src/styles/shared.ts`. Thin global leftovers (document rules, `.prose` descendants, carousel/accordion pseudos) stay in `src/app.css`.

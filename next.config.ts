@@ -1,8 +1,13 @@
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 import { groq } from 'next-sanity'
 import { sanity } from 'next-sanity/live/cache-life'
+import withStylexTurbopack from '@stylexswc/nextjs-plugin/turbopack'
 import { ROUTES } from './src/lib/env'
 import { client } from './src/sanity/lib/client'
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url))
 
 const nextConfig: NextConfig = {
 	reactCompiler: true,
@@ -49,4 +54,18 @@ const nextConfig: NextConfig = {
 	},
 }
 
-export default nextConfig
+export default withStylexTurbopack({
+	rsOptions: {
+		dev: process.env.NODE_ENV !== 'production',
+		runtimeInjection: false,
+		treeshakeCompensation: true,
+		aliases: {
+			'@/*': [path.join(rootDir, 'src/*')],
+		},
+		unstable_moduleResolution: {
+			type: 'commonJS',
+			rootDir,
+		},
+	},
+	stylexImports: ['@stylexjs/stylex'],
+})(nextConfig)

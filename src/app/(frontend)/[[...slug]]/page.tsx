@@ -21,6 +21,7 @@ import {
 	MODULES_QUERY,
 } from '@/sanity/lib/queries'
 import type { PAGE_QUERY_RESULT } from '@/sanity/types'
+import { shared } from '../../../styles/shared'
 import Loading from '@/ui/loading'
 
 type Props = PageProps<'/[[...slug]]'>
@@ -31,7 +32,7 @@ export default async function Page({ params }: Props) {
 
 	if (showDrafts) {
 		return (
-			<Suspense fallback={<Loading className="section" />}>
+			<Suspense fallback={<Loading xstyle={shared.section} />}>
 				<DynamicPage params={params} />
 			</Suspense>
 		)

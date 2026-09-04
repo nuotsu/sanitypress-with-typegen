@@ -1,8 +1,12 @@
+import * as stylex from '@stylexjs/stylex'
 import { PortableText } from 'next-sanity'
 import { portableTextToSchemaHtml } from '@/lib/portable-text-to-schema-html'
 import { getBlockText } from '@/lib/utils'
 import { Module } from '@/modules'
 import type { StepList } from '@/sanity/types'
+import { shared } from '../../styles/shared'
+import { colors, spacing } from '../../styles/tokens.stylex'
+import { mq } from '../../styles/breakpoints.stylex'
 import CTAList from '@/ui/cta-list'
 import Eyebrow from '@/ui/eyebrow'
 
@@ -14,11 +18,10 @@ export default function ({
 	enableSchema = true,
 	...props
 }: StepList) {
+	const headerSx = stylex.props(shared.prose, styles.header)
+
 	return (
-		<Module
-			className="section grid items-start gap-8 md:grid-cols-2"
-			{...props}
-		>
+		<Module {...stylex.props(shared.section, styles.root)} {...props}>
 			{enableSchema && steps?.length && (
 				<script
 					type="application/ld+json"
@@ -37,27 +40,106 @@ export default function ({
 				/>
 			)}
 
-			<header className="prose md:sticky-below-header [--offset:1rem]">
+			<header
+				{...headerSx}
+				className={[headerSx.className, 'prose'].filter(Boolean).join(' ')}
+				style={{
+					...headerSx.style,
+					['--offset' as string]: '1rem',
+				}}
+			>
 				<Eyebrow value={eyebrow} />
 				<PortableText value={intro} />
-				<CTAList ctas={ctas} className="max-sm:*:w-full" />
+				<CTAList
+					ctas={ctas}
+					xstyle={styles.ctas}
+					className={ctaFullWidthClass}
+				/>
 			</header>
 
-			<ol className="grid gap-8">
-				{steps?.map((step, index) => (
-					<li
-						key={`${step._key}-${index}`}
-						className="gap-ch flex items-start [counter-increment:step]"
-					>
-						<span className="h3 bg-foreground text-background size-lh grid shrink-0 place-content-center text-center before:content-[counter(step)]" />
+			<ol {...stylex.props(styles.list)}>
+				{steps?.map((step, index) => {
+					const stepSx = stylex.props(shared.prose)
 
-						<div className="prose">
-							<PortableText value={step.content ?? []} />
-							<CTAList ctas={step.ctas} className="max-sm:*:w-full" />
-						</div>
-					</li>
-				))}
+					return (
+						<li key={`${step._key}-${index}`} {...stylex.props(styles.item)}>
+							<span
+								{...stylex.props(shared.h3, styles.marker)}
+								aria-hidden
+							/>
+
+							<div
+								{...stepSx}
+								className={[stepSx.className, 'prose']
+									.filter(Boolean)
+									.join(' ')}
+							>
+								<PortableText value={step.content ?? []} />
+								<CTAList
+									ctas={step.ctas}
+									xstyle={styles.ctas}
+									className={ctaFullWidthClass}
+								/>
+							</div>
+						</li>
+					)
+				})}
 			</ol>
 		</Module>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		display: 'grid',
+		alignItems: 'flex-start',
+		gap: '2rem',
+		gridTemplateColumns: {
+			default: null,
+			[mq.md]: 'repeat(2, minmax(0, 1fr))',
+		},
+	},
+	header: {
+		position: {
+			default: null,
+			[mq.md]: 'sticky',
+		},
+		top: {
+			default: null,
+			[mq.md]: 'calc(var(--header-height) + var(--offset, 0px))',
+		},
+	},
+	ctas: {
+		flexWrap: 'wrap',
+	},
+	list: {
+		display: 'grid',
+		gap: '2rem',
+		listStyleType: 'none',
+		padding: 0,
+		margin: 0,
+		counterReset: 'step',
+	},
+	item: {
+		display: 'flex',
+		alignItems: 'flex-start',
+		gap: spacing.ch,
+		counterIncrement: 'step',
+	},
+	marker: {
+		flexShrink: 0,
+		display: 'grid',
+		placeContent: 'center',
+		width: spacing.lh,
+		height: spacing.lh,
+		textAlign: 'center',
+		backgroundColor: colors.foreground,
+		color: colors.background,
+		'::before': {
+			content: 'counter(step)',
+		},
+	},
+})
+
+/** StyleX cannot target arbitrary children; keep a thin CSS class. */
+const ctaFullWidthClass = 'cta-list-full-sm'

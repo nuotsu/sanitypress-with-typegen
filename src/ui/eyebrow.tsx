@@ -1,19 +1,34 @@
+import * as stylex from '@stylexjs/stylex'
 import { stegaClean } from 'next-sanity'
-import { cn } from '@/lib/utils'
+import { shared } from '../styles/shared'
 
 export default function ({
 	value,
+	xstyle,
 	className,
 	...props
-}: { value?: string } & React.ComponentProps<'p'>) {
+}: { value?: string; xstyle?: stylex.StyleXStyles; className?: string } & Omit<
+	React.ComponentProps<'p'>,
+	'className'
+>) {
 	if (!value) return null
+
+	const sx = stylex.props(shared.technical, styles.root, xstyle)
 
 	return (
 		<p
-			className={cn('technical eyebrow text-sm text-current/60', className)}
 			{...props}
+			{...sx}
+			className={[sx.className, className].filter(Boolean).join(' ')}
 		>
 			{stegaClean(value)}
 		</p>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		fontSize: '0.875rem',
+		color: 'color-mix(in oklab, currentColor 60%, transparent)',
+	},
+})

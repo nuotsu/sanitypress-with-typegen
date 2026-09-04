@@ -1,31 +1,44 @@
-import { cn } from '@/lib/utils'
+import * as stylex from '@stylexjs/stylex'
+import { shared } from '../../styles/shared'
 import type { LinkList } from '@/sanity/types'
 import SanityLink, { type SanityLinkType } from '@/ui/sanity-link'
 
 export default function ({
 	link,
 	links,
+	xstyle,
 	className,
 	_type,
 	_key,
 	...props
-}: LinkList & React.ComponentProps<'li'> & Partial<{ _key: string }>) {
+}: LinkList &
+	Omit<React.ComponentProps<'li'>, 'className'> &
+	Partial<{ _key: string }> & {
+		xstyle?: stylex.StyleXStyles
+		className?: string
+	}) {
+	const sx = stylex.props(styles.root, xstyle)
+
 	return (
-		<li className={cn('grid gap-1 text-left', className)} {...props}>
+		<li
+			{...props}
+			{...sx}
+			className={[sx.className, className].filter(Boolean).join(' ')}
+		>
 			{link && (
 				<div>
 					<SanityLink
-						className="technical text-xs text-current/60 [[href]]:hover:underline"
+						{...stylex.props(shared.technical, styles.heading)}
 						link={link as SanityLinkType}
 					/>
 				</div>
 			)}
 
-			<ul className="leading-tight">
+			<ul {...stylex.props(styles.list)}>
 				{links?.map((item, i) => (
 					<li key={`${item._key}-${i}`}>
 						<SanityLink
-							className="inline-block py-[.3ch] text-current hover:underline"
+							{...stylex.props(styles.item)}
 							link={item as SanityLinkType}
 						/>
 					</li>
@@ -34,3 +47,31 @@ export default function ({
 		</li>
 	)
 }
+
+const styles = stylex.create({
+	root: {
+		display: 'grid',
+		gap: '0.25rem',
+		textAlign: 'left',
+	},
+	heading: {
+		fontSize: '0.75rem',
+		color: 'color-mix(in oklab, currentColor 60%, transparent)',
+		textDecorationLine: {
+			default: null,
+			':hover': 'underline',
+		},
+	},
+	list: {
+		lineHeight: 1.25,
+	},
+	item: {
+		display: 'inline-block',
+		paddingBlock: '0.3ch',
+		color: 'currentColor',
+		textDecorationLine: {
+			default: null,
+			':hover': 'underline',
+		},
+	},
+})
